@@ -1,67 +1,67 @@
-import React, { useState, useMemo, useEffect } from 'react';
-import { Competencia, Equipo } from '../types';
+import React, { useState, useEffect, useCallback } from 'react';
+import { Competition, Team } from '../types';
 
-interface TabCompetenciasProps {
-  equipos: Equipo[];
-  onAgregarCompetencia: (competencia: Competencia) => void;
+interface CompetitionTabProps {
+  teams: Team[];
+  onAddCompetition: (newCompetition: Competition) => void;
 }
 
-const TabCompetencias: React.FC<TabCompetenciasProps> = ({
-  equipos,
-  onAgregarCompetencia,
+const CompetitionsTab: React.FC<CompetitionTabProps> = ({
+  teams,
+  onAddCompetition: onAddCompetition,
 }) => {
-  const [tipo, setTipo] = useState<Competencia['tipo']>('1vs1');
-  const [equiposSeleccionados, setEquiposSeleccionados] = useState<string[]>([]);
-  const [puntos, setPuntos] = useState<number[]>([]);
-  const [descripcion, setDescripcion] = useState('');
+  const [type, setType] = useState<Competition['type']>('1vs1');
+  const [selectedTeams, setSelectedTeams] = useState<string[]>([]);
+  const [scores, setScores] = useState<number[]>([]);
+  const [description, setDescription] = useState('');
 
   useEffect(() => {
-    if (tipo === 'todosVsTodos') {
-      setEquiposSeleccionados(equipos.map((team) => team.id));
+    if (type === 'todosVsTodos') {
+      setSelectedTeams(teams.map((team) => team.id));
     } else {
-      setEquiposSeleccionados([]);
+      setSelectedTeams([]);
     }
-    setPuntos([]);
-  }, [tipo, equipos]);
+    setScores([]);
+  }, [type, teams]);
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    let puntosFinales = [...puntos];
+    let finalPoints = [...scores];
     
-    if (tipo === '2vs2' && equiposSeleccionados.length === 4) {
-      puntosFinales = [puntos[0], puntos[0], puntos[1], puntos[1]];
+    if (type === '2vs2' && selectedTeams.length === 4) {
+      finalPoints = [scores[0], scores[0], scores[1], scores[1]];
     }
 
     if (
-      equiposSeleccionados.length > 0 &&
-      puntosFinales.length === equiposSeleccionados.length &&
-      descripcion.trim()
+      selectedTeams.length > 0 &&
+      finalPoints.length === selectedTeams.length &&
+      description.trim()
     ) {
-      const nuevaCompetencia: Competencia = {
+      const newCompetition: Competition = {
         id: Date.now().toString(),
-        tipo,
-        equipos: equiposSeleccionados,
-        puntos: puntosFinales,
-        descripcion: descripcion.trim(),
+        type: type,
+        teams: selectedTeams,
+        scores: finalPoints,
+        description: description.trim(),
       };
-      onAgregarCompetencia(nuevaCompetencia);
-      setEquiposSeleccionados([]);
-      setPuntos([]);
-      setDescripcion('');
+      onAddCompetition(newCompetition);
+      setSelectedTeams([]);
+      setScores([]);
+      setDescription('');
     }
   };
 
-  const getEquipoById = (id: string) =>
-    equipos.find((equipo) => equipo.id === id);
+  const getTeamById = (id: string) =>
+    teams.find((team) => team.id === id);
 
-  const equiposDisponibles = useMemo(() => {
-    return equipos.filter(
-      (equipo) => !equiposSeleccionados.includes(equipo.id)
+  const availableTeams = useCallback((teamId: string) => {
+    return teams.filter(
+      (team) => !selectedTeams.includes(team.id) || team.id === teamId
     );
-  }, [equipos, equiposSeleccionados]);
+  }, [teams, selectedTeams]);
 
-  const renderFormularioCompetencia = () => {
-    switch (tipo) {
+  const renderCompetitionForm = () => {
+    switch (type) {
       case '1vs1':
         return (
           <div className="space-y-4">
@@ -70,19 +70,19 @@ const TabCompetencias: React.FC<TabCompetenciasProps> = ({
                 <div key={index}>
                   <label className="block mb-1">Equipo {index + 1}:</label>
                   <select
-                    value={equiposSeleccionados[index] || ''}
+                    value={selectedTeams[index] || ''}
                     onChange={(e) => {
-                      const newEquipos = [...equiposSeleccionados];
-                      newEquipos[index] = e.target.value;
-                      setEquiposSeleccionados(newEquipos);
+                      const duplicatedTeams = [...selectedTeams];
+                      duplicatedTeams[index] = e.target.value;
+                      setSelectedTeams(duplicatedTeams);
                     }}
                     className="w-full p-2 border rounded"
                   >
                     <option value="">Seleccionar equipo</option>
-                    {(index === 0 ? equipos : equiposDisponibles).map(
-                      (equipo) => (
-                        <option key={equipo.id} value={equipo.id}>
-                          {equipo.nombre}
+                    {availableTeams(selectedTeams[index]).map(
+                      (selectedTeam) => (
+                        <option key={selectedTeam.id} value={selectedTeam.id}>
+                          {selectedTeam.name}
                         </option>
                       )
                     )}
@@ -92,25 +92,25 @@ const TabCompetencias: React.FC<TabCompetenciasProps> = ({
             </div>
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
               {[0, 1].map((index) => {
-                const equipo = getEquipoById(equiposSeleccionados[index]);
+                const team = getTeamById(selectedTeams[index]);
                 return (
                   <div key={index} className="flex items-center space-x-2">
-                    {equipo && (
+                    {team && (
                       <div
                         className="w-6 h-6 rounded-full"
-                        style={{ backgroundColor: equipo.color }}
+                        style={{ backgroundColor: team.color }}
                       ></div>
                     )}
                     <label className="block">
-                      Puntos {equipo?.nombre || `Equipo ${index + 1}`}:
+                      Puntos {team?.name || `Equipo ${index + 1}`}:
                     </label>
                     <input
                       type="number"
-                      value={puntos[index] || 0}
+                      value={scores[index] || 0}
                       onChange={(e) => {
-                        const newPuntos = [...puntos];
-                        newPuntos[index] = parseInt(e.target.value) || 0;
-                        setPuntos(newPuntos);
+                        const updatedScores = [...scores];
+                        updatedScores[index] = Number(e.target.value) || 0;
+                        setScores(updatedScores);
                       }}
                       className="w-20 p-1 border rounded"
                       min="0"
@@ -129,55 +129,56 @@ const TabCompetencias: React.FC<TabCompetenciasProps> = ({
                 <div key={index}>
                   <label className="block mb-1">Equipo {index + 1}:</label>
                   <select
-                    value={equiposSeleccionados[index] || ''}
+                    value={selectedTeams[index] || ''}
                     onChange={(e) => {
-                      const newEquipos = [...equiposSeleccionados];
-                      newEquipos[index] = e.target.value;
-                      setEquiposSeleccionados(newEquipos);
+                      const clonedTeams = [...selectedTeams];
+                      clonedTeams[index] = e.target.value;
+                      setSelectedTeams(clonedTeams);
                     }}
                     className="w-full p-2 border rounded"
                   >
                     <option value="">Seleccionar equipo</option>
-                    {(index === 0 ? equipos : equiposDisponibles).map(
-                      (equipo) => (
-                        <option key={equipo.id} value={equipo.id}>
-                          {equipo.nombre}
-                        </option>
+                    {availableTeams(selectedTeams[index]).map(
+                        (team) => (
+                          <option key={team.id} value={team.id}>
+                            {team.name}
+                          </option>
+                        )
                       )
-                    )}
+                    }
                   </select>
                 </div>
               ))}
             </div>
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
               {[0, 1].map((index) => {
-                const equipo1 = getEquipoById(equiposSeleccionados[index * 2]);
-                const equipo2 = getEquipoById(equiposSeleccionados[index * 2 + 1]);
+                const team1 = getTeamById(selectedTeams[index * 2]);
+                const team2 = getTeamById(selectedTeams[index * 2 + 1]);
                 return (
                   <div key={index} className="flex items-center space-x-2">
-                    {equipo1 && (
+                    {team1 && (
                       <div
                         className="w-6 h-6 rounded-full"
-                        style={{ backgroundColor: equipo1.color }}
+                        style={{ backgroundColor: team1.color }}
                       ></div>
                     )}
-                    {equipo2 && (
+                    {team2 && (
                       <div
                         className="w-6 h-6 rounded-full"
-                        style={{ backgroundColor: equipo2.color }}
+                        style={{ backgroundColor: team2.color }}
                       ></div>
                     )}
                     <label className="block">
-                      Puntos {equipo1?.nombre || `Equipo ${index * 2 + 1}`} y{' '}
-                      {equipo2?.nombre || `Equipo ${index * 2 + 2}`}:
+                      Puntos {team1?.name || `Equipo ${index * 2 + 1}`} y{' '}
+                      {team2?.name || `Equipo ${index * 2 + 2}`}:
                     </label>
                     <input
                       type="number"
-                      value={puntos[index] || 0}
+                      value={scores[index] || 0}
                       onChange={(e) => {
-                        const newPuntos = [...puntos];
-                        newPuntos[index] = parseInt(e.target.value) || 0;
-                        setPuntos(newPuntos);
+                        const clonedScores = [...scores];
+                        clonedScores[index] = Number(e.target.value) || 0;
+                        setScores(clonedScores);
                       }}
                       className="w-20 p-1 border rounded"
                       min="0"
@@ -191,24 +192,24 @@ const TabCompetencias: React.FC<TabCompetenciasProps> = ({
       case 'todosVsTodos':
         return (
           <div className="space-y-4">
-            {equipos.map((equipo, index) => (
-              <div key={equipo.id} className="flex items-center space-x-4">
+            {teams.map((team, index) => (
+              <div key={team.id} className="flex items-center space-x-4">
                 <label className="flex items-center space-x-2">
                   <div
                     className="w-6 h-6 rounded-full"
-                    style={{ backgroundColor: equipo.color }}
+                    style={{ backgroundColor: team.color }}
                   ></div>
-                  <span>{equipo.nombre}</span>
+                  <span>{team.name}</span>
                 </label>
                 <div className="flex items-center space-x-2">
                   <label>Puntos:</label>
                   <input
                     type="number"
-                    value={puntos[index] || 0}
+                    value={scores[index] || 0}
                     onChange={(e) => {
-                      const newPuntos = [...puntos];
-                      newPuntos[index] = parseInt(e.target.value) || 0;
-                      setPuntos(newPuntos);
+                      const clonedScores = [...scores];
+                      clonedScores[index] = Number(e.target.value) || 0;
+                      setScores(clonedScores);
                     }}
                     className="w-20 p-1 border rounded"
                     min="0"
@@ -224,36 +225,36 @@ const TabCompetencias: React.FC<TabCompetenciasProps> = ({
             <div>
               <label className="block mb-1">Equipo:</label>
               <select
-                value={equiposSeleccionados[0] || ''}
-                onChange={(e) => setEquiposSeleccionados([e.target.value])}
+                value={selectedTeams[0] || ''}
+                onChange={(e) => setSelectedTeams([e.target.value])}
                 className="w-full p-2 border rounded"
               >
                 <option value="">Seleccionar equipo</option>
-                {equipos.map((equipo) => (
-                  <option key={equipo.id} value={equipo.id}>
-                    {equipo.nombre}
+                {teams.map((team) => (
+                  <option key={team.id} value={team.id}>
+                    {team.name}
                   </option>
                 ))}
               </select>
             </div>
             <div className="flex items-center space-x-2">
-              {equiposSeleccionados[0] && (
+              {selectedTeams[0] && (
                 <div
                   className="w-6 h-6 rounded-full"
                   style={{
-                    backgroundColor: getEquipoById(equiposSeleccionados[0])
+                    backgroundColor: getTeamById(selectedTeams[0])
                       ?.color,
                   }}
                 ></div>
               )}
               <label className="block">
                 Puntos{' '}
-                {getEquipoById(equiposSeleccionados[0])?.nombre || 'Equipo'}:
+                {getTeamById(selectedTeams[0])?.name || 'Equipo'}:
               </label>
               <input
                 type="number"
-                value={puntos[0] || 0}
-                onChange={(e) => setPuntos([parseInt(e.target.value) || 0])}
+                value={scores[0] || 0}
+                onChange={(e) => setScores([Number(e.target.value) || 0])}
                 className="w-20 p-1 border rounded"
                 min="0"
               />
@@ -275,11 +276,11 @@ const TabCompetencias: React.FC<TabCompetenciasProps> = ({
           </label>
           <select
             id="tipo"
-            value={tipo}
+            value={type}
             onChange={(e) => {
-              setTipo(e.target.value as Competencia['tipo']);
-              setEquiposSeleccionados([]);
-              setPuntos([]);
+              setType(e.target.value as Competition['type']);
+              setSelectedTeams([]);
+              setScores([]);
             }}
             className="w-full p-2 border rounded"
           >
@@ -289,7 +290,7 @@ const TabCompetencias: React.FC<TabCompetenciasProps> = ({
             <option value="arbitraria">Arbitraria</option>
           </select>
         </div>
-        {renderFormularioCompetencia()}
+        {renderCompetitionForm()}
         <div>
           <label htmlFor="descripcion" className="block mb-1">
             Descripción:
@@ -297,8 +298,8 @@ const TabCompetencias: React.FC<TabCompetenciasProps> = ({
           <input
             type="text"
             id="descripcion"
-            value={descripcion}
-            onChange={(e) => setDescripcion(e.target.value)}
+            value={description}
+            onChange={(e) => setDescription(e.target.value)}
             className="w-full p-2 border rounded"
             required
           />
@@ -314,4 +315,4 @@ const TabCompetencias: React.FC<TabCompetenciasProps> = ({
   );
 };
 
-export default TabCompetencias;
+export default CompetitionsTab;

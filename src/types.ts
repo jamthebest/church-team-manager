@@ -1,18 +1,18 @@
-export interface Equipo {
+export interface Team {
   id: string;
-  nombre: string;
+  name: string;
   color: string;
 }
 
-export interface Competencia {
+export interface Competition {
   id: string;
-  tipo: '1vs1' | '2vs2' | 'todosVsTodos' | 'arbitraria';
-  equipos: string[];
-  puntos: number[];
-  descripcion: string;
+  type: '1vs1' | '2vs2' | 'todosVsTodos' | 'arbitraria';
+  teams: string[];
+  scores: number[];
+  description: string;
 }
 
-export interface Estado {
-  equipos: Equipo[];
-  competencias: Competencia[];
+export interface State {
+  teams: Team[];
+  competitions: Competition[];
 }

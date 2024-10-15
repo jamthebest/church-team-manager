@@ -1,44 +1,44 @@
 import React, { useState } from 'react';
-import { Equipo } from '../types';
+import { Team } from '../types';
 import { Pencil, Trash2, Check, X } from 'lucide-react';
 
-interface TabEquiposProps {
-  equipos: Equipo[];
-  onAgregarEquipo: (equipo: Equipo) => void;
-  onEditarEquipo: (equipo: Equipo) => void;
-  onBorrarEquipo: (id: string) => void;
+interface TeamTabProps {
+  teams: Team[];
+  onAddTeam: (team: Team) => void;
+  onEditTeam: (team: Team) => void;
+  onDeleteTeam: (id: string) => void;
 }
 
-const TabEquipos: React.FC<TabEquiposProps> = ({ equipos, onAgregarEquipo, onEditarEquipo, onBorrarEquipo }) => {
-  const [nombre, setNombre] = useState('');
+const TeamTab: React.FC<TeamTabProps> = ({ teams, onAddTeam, onEditTeam, onDeleteTeam }) => {
+  const [teamName, setTeamName] = useState('');
   const [color, setColor] = useState('#000000');
-  const [equipoEditando, setEquipoEditando] = useState<string | null>(null);
+  const [editingTeam, setEditingTeam] = useState<string | null>(null);
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    if (nombre.trim()) {
-      const nuevoEquipo: Equipo = {
+    if (teamName.trim()) {
+      const newTeam: Team = {
         id: Date.now().toString(),
-        nombre: nombre.trim(),
+        name: teamName.trim(),
         color,
       };
-      onAgregarEquipo(nuevoEquipo);
-      setNombre('');
+      onAddTeam(newTeam);
+      setTeamName('');
       setColor('#000000');
     }
   };
 
-  const iniciarEdicion = (id: string) => {
-    setEquipoEditando(id);
+  const startEditing = (id: string) => {
+    setEditingTeam(id);
   };
 
-  const cancelarEdicion = () => {
-    setEquipoEditando(null);
+  const cancelTeamEditing = () => {
+    setEditingTeam(null);
   };
 
-  const guardarEdicion = (equipo: Equipo) => {
-    onEditarEquipo(equipo);
-    setEquipoEditando(null);
+  const updateTeam = (teamToUpdate: Team) => {
+    onEditTeam(teamToUpdate);
+    setEditingTeam(null);
   };
 
   return (
@@ -51,8 +51,8 @@ const TabEquipos: React.FC<TabEquiposProps> = ({ equipos, onAgregarEquipo, onEdi
             <input
               type="text"
               id="nombre"
-              value={nombre}
-              onChange={(e) => setNombre(e.target.value)}
+              value={teamName}
+              onChange={(e) => setTeamName(e.target.value)}
               className="w-full p-2 border rounded"
               required
             />
@@ -76,32 +76,32 @@ const TabEquipos: React.FC<TabEquiposProps> = ({ equipos, onAgregarEquipo, onEdi
       <div className="bg-white rounded-lg shadow p-4 sm:p-6">
         <h2 className="text-xl font-semibold mb-4">Equipos Agregados</h2>
         <ul className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4">
-          {equipos.map((equipo) => (
-            <li key={equipo.id} className="border rounded p-3">
-              {equipoEditando === equipo.id ? (
+          {teams.map((selectedTeam) => (
+            <li key={selectedTeam.id} className="border rounded p-3">
+              {editingTeam === selectedTeam.id ? (
                 <div className="space-y-2">
                   <input
                     type="text"
-                    value={equipo.nombre}
-                    onChange={(e) => onEditarEquipo({ ...equipo, nombre: e.target.value })}
+                    value={selectedTeam.name}
+                    onChange={(e) => onEditTeam({ ...selectedTeam, name: e.target.value })}
                     className="w-full p-1 border rounded"
                   />
                   <input
                     type="color"
-                    value={equipo.color}
-                    onChange={(e) => onEditarEquipo({ ...equipo, color: e.target.value })}
+                    value={selectedTeam.color}
+                    onChange={(e) => onEditTeam({ ...selectedTeam, color: e.target.value })}
                     className="w-full p-1 border rounded"
                   />
                   <div className="flex justify-end space-x-2">
                     <button
-                      onClick={() => guardarEdicion(equipo)}
+                      onClick={() => updateTeam(selectedTeam)}
                       className="text-green-500 hover:text-green-700"
                       title="Guardar cambios"
                     >
                       <Check size={20} />
                     </button>
                     <button
-                      onClick={cancelarEdicion}
+                      onClick={cancelTeamEditing}
                       className="text-red-500 hover:text-red-700"
                       title="Cancelar edición"
                     >
@@ -112,19 +112,19 @@ const TabEquipos: React.FC<TabEquiposProps> = ({ equipos, onAgregarEquipo, onEdi
               ) : (
                 <div className="flex items-center justify-between">
                   <div className="flex items-center space-x-2">
-                    <div className="w-6 h-6 rounded-full" style={{ backgroundColor: equipo.color }}></div>
-                    <span>{equipo.nombre}</span>
+                    <div className="w-6 h-6 rounded-full" style={{ backgroundColor: selectedTeam.color }}></div>
+                    <span>{selectedTeam.name}</span>
                   </div>
                   <div className="flex space-x-2">
                     <button
-                      onClick={() => iniciarEdicion(equipo.id)}
+                      onClick={() => startEditing(selectedTeam.id)}
                       className="text-blue-500 hover:text-blue-700"
                       title="Editar equipo"
                     >
                       <Pencil size={20} />
                     </button>
                     <button
-                      onClick={() => onBorrarEquipo(equipo.id)}
+                      onClick={() => onDeleteTeam(selectedTeam.id)}
                       className="text-red-500 hover:text-red-700"
                       title="Borrar equipo"
                     >
@@ -141,4 +141,4 @@ const TabEquipos: React.FC<TabEquiposProps> = ({ equipos, onAgregarEquipo, onEdi
   );
 };
 
-export default TabEquipos;
+export default TeamTab;

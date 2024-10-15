@@ -1,48 +1,56 @@
-import React, { useState } from 'react';
-import { Equipo, Competencia, Estado } from './types';
-import TabEquipos from './components/TabEquipos';
-import TabCompetencias from './components/TabCompetencias';
-import TabResultados from './components/TabResultados';
-import TabPosiciones from './components/TabPosiciones';
+import { useState } from 'react';
+import { Team, Competition, State } from './types';
+import TeamTab from './components/TeamTab';
+import CompetitionsTab from './components/CompetitionsTab';
+import ResultTab from './components/ResultTab';
+import TableStandings from './components/TableStandings';
+
+
+enum TabEnum {
+  TEAMS = 'teams',
+  COMPETITIONS = 'competitions',
+  RESULTS = 'results',
+  POSITIONS = 'positions',
+}
 
 function App() {
-  const [estado, setEstado] = useState<Estado>({
-    equipos: [],
-    competencias: [],
+  const [state, setState] = useState<State>({
+    teams: [],
+    competitions: [],
   });
 
-  const [tabActiva, setTabActiva] = useState<'equipos' | 'competencias' | 'resultados' | 'posiciones'>('equipos');
+  const [activeTab, setActiveTab] = useState<TabEnum>(TabEnum.TEAMS);
 
-  const agregarEquipo = (equipo: Equipo) => {
-    setEstado((prevEstado) => ({
-      ...prevEstado,
-      equipos: [...prevEstado.equipos, equipo],
+  const addTeam = (newTeam: Team) => {
+    setState((previousState) => ({
+      ...previousState,
+      teams: [...previousState.teams, newTeam],
     }));
   };
 
-  const editarEquipo = (equipoEditado: Equipo) => {
-    setEstado((prevEstado) => ({
-      ...prevEstado,
-      equipos: prevEstado.equipos.map((equipo) =>
-        equipo.id === equipoEditado.id ? equipoEditado : equipo
+  const updateTeam = (editedTeam: Team) => {
+    setState((previousState) => ({
+      ...previousState,
+      teams: previousState.teams.map((currentTeam) =>
+        currentTeam.id === editedTeam.id ? editedTeam : currentTeam
       ),
     }));
   };
 
-  const borrarEquipo = (id: string) => {
-    setEstado((prevEstado) => ({
-      ...prevEstado,
-      equipos: prevEstado.equipos.filter((equipo) => equipo.id !== id),
-      competencias: prevEstado.competencias.filter((competencia) => 
-        !competencia.equipos.includes(id)
+  const deleteTeam = (id: string) => {
+    setState((previousState) => ({
+      ...previousState,
+      teams: previousState.teams.filter((team) => team.id !== id),
+      competitions: previousState.competitions.filter((competition) => 
+        !competition.teams.includes(id)
       ),
     }));
   };
 
-  const agregarCompetencia = (competencia: Competencia) => {
-    setEstado((prevEstado) => ({
-      ...prevEstado,
-      competencias: [...prevEstado.competencias, competencia],
+  const addCompetition = (newCompetition: Competition) => {
+    setState((previousState) => ({
+      ...previousState,
+      competitions: [...previousState.competitions, newCompetition],
     }));
   };
 
@@ -52,15 +60,15 @@ function App() {
       <div className="mb-4">
         <div className="border-b border-gray-200">
           <nav className="-mb-px flex">
-            {['equipos', 'competencias', 'resultados', 'posiciones'].map((tab) => (
+            {[TabEnum.TEAMS, TabEnum.COMPETITIONS, TabEnum.RESULTS, TabEnum.POSITIONS].map((tab) => (
               <button
                 key={tab}
                 className={`py-2 px-3 sm:px-4 text-center border-b-2 font-medium text-sm sm:text-base whitespace-nowrap ${
-                  tabActiva === tab
+                  activeTab === tab
                     ? 'border-blue-500 text-blue-600'
                     : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300'
                 }`}
-                onClick={() => setTabActiva(tab as any)}
+                onClick={() => setActiveTab(tab as TabEnum)}
               >
                 {tab.charAt(0).toUpperCase() + tab.slice(1)}
               </button>
@@ -68,30 +76,30 @@ function App() {
           </nav>
         </div>
       </div>
-      {tabActiva === 'equipos' && (
-        <TabEquipos
-          equipos={estado.equipos}
-          onAgregarEquipo={agregarEquipo}
-          onEditarEquipo={editarEquipo}
-          onBorrarEquipo={borrarEquipo}
+      {activeTab === TabEnum.TEAMS && (
+        <TeamTab
+          teams={state.teams}
+          onAddTeam={addTeam}
+          onEditTeam={updateTeam}
+          onDeleteTeam={deleteTeam}
         />
       )}
-      {tabActiva === 'competencias' && (
-        <TabCompetencias
-          equipos={estado.equipos}
-          onAgregarCompetencia={agregarCompetencia}
+      {activeTab === TabEnum.COMPETITIONS && (
+        <CompetitionsTab
+          teams={state.teams}
+          onAddCompetition={addCompetition}
         />
       )}
-      {tabActiva === 'resultados' && (
-        <TabResultados
-          competencias={estado.competencias}
-          equipos={estado.equipos}
+      {activeTab === TabEnum.RESULTS && (
+        <ResultTab
+          competitions={state.competitions}
+          teams={state.teams}
         />
       )}
-      {tabActiva === 'posiciones' && (
-        <TabPosiciones
-          equipos={estado.equipos}
-          competencias={estado.competencias}
+      {activeTab === TabEnum.POSITIONS && (
+        <TableStandings
+          teams={state.teams}
+          competitions={state.competitions}
         />
       )}
     </div>
