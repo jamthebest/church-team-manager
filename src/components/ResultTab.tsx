@@ -6,6 +6,13 @@ interface ResultsTabProps {
   teams: Team[];
 }
 
+const competitionText = {
+  '1vs1': '1 vs 1',
+  '2vs2': '2 vs 2',
+  'todosVsTodos': 'Todos vs Todos',
+  'arbitraria': 'Arbitraria',
+};
+
 const ResultTab: React.FC<ResultsTabProps> = ({ competitions, teams }) => {
   const [teamFilter, setTeamFilterValue] = useState<string>('');
   const [filterType, setFilterType] = useState<string>('');
@@ -53,7 +60,7 @@ const ResultTab: React.FC<ResultsTabProps> = ({ competitions, teams }) => {
         </div>
       </div>
       <div className="overflow-x-auto">
-        <table className="w-full min-w-full">
+        <table className="w-full min-w-full table-auto">
           <thead>
             <tr className="bg-gray-100">
               <th className="text-left p-2">Tipo</th>
@@ -64,7 +71,7 @@ const ResultTab: React.FC<ResultsTabProps> = ({ competitions, teams }) => {
           <tbody>
             {filteredCompetitions.map((competition) => (
               <tr key={competition.id} className="border-b">
-                <td className="p-2">{competition.type}</td>
+                <td className="p-2">{competitionText[competition.type]}</td>
                 <td className="p-2">{competition.description}</td>
                 <td className="p-2">
                   <div className="flex flex-wrap items-center gap-2">

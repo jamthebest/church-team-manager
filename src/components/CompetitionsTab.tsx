@@ -271,11 +271,11 @@ const CompetitionsTab: React.FC<CompetitionTabProps> = ({
       <form onSubmit={handleSubmit} className="space-y-6">
         <h2 className="text-xl font-semibold">Agregar Competencia</h2>
         <div>
-          <label htmlFor="tipo" className="block mb-1">
+          <label htmlFor="type" className="block mb-1">
             Tipo de Competencia:
           </label>
           <select
-            id="tipo"
+            id="type"
             value={type}
             onChange={(e) => {
               setType(e.target.value as Competition['type']);
@@ -292,12 +292,12 @@ const CompetitionsTab: React.FC<CompetitionTabProps> = ({
         </div>
         {renderCompetitionForm()}
         <div>
-          <label htmlFor="descripcion" className="block mb-1">
+          <label htmlFor="description" className="block mb-1">
             Descripción:
           </label>
           <input
             type="text"
-            id="descripcion"
+            id="description"
             value={description}
             onChange={(e) => setDescription(e.target.value)}
             className="w-full p-2 border rounded"
