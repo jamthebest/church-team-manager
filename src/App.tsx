@@ -13,6 +13,13 @@ enum TabEnum {
   POSITIONS = 'positions',
 }
 
+const tabText = {
+  [TabEnum.TEAMS]: 'Equipos',
+  [TabEnum.COMPETITIONS]: 'Competencias',
+  [TabEnum.RESULTS]: 'Resultados',
+  [TabEnum.POSITIONS]: 'Posiciones',
+}
+
 function App() {
   const [state, setState] = useState<State>({
     teams: [],
@@ -63,14 +70,14 @@ function App() {
             {[TabEnum.TEAMS, TabEnum.COMPETITIONS, TabEnum.RESULTS, TabEnum.POSITIONS].map((tab) => (
               <button
                 key={tab}
-                className={`py-2 px-3 sm:px-4 text-center border-b-2 font-medium text-sm sm:text-base whitespace-nowrap ${
+                className={`py-2 px-2 sm:px-4 text-center border-b-2 font-medium text-sm sm:text-base whitespace-nowrap ${
                   activeTab === tab
                     ? 'border-blue-500 text-blue-600'
                     : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300'
                 }`}
                 onClick={() => setActiveTab(tab as TabEnum)}
               >
-                {tab.charAt(0).toUpperCase() + tab.slice(1)}
+                {tabText[tab]}
               </button>
             ))}
           </nav>
