@@ -1,6 +1,8 @@
 import React, { useState } from 'react';
 import { Team } from '../types';
 import { Pencil, Trash2, Check, X } from 'lucide-react';
+import { defaultColors } from '../constants';
+import Circle from '@uiw/react-color-circle';
 
 interface TeamTabProps {
   teams: Team[];
@@ -59,12 +61,19 @@ const TeamTab: React.FC<TeamTabProps> = ({ teams, onAddTeam, onEditTeam, onDelet
           </div>
           <div>
             <label htmlFor="color" className="block mb-1">Color:</label>
-            <input
-              type="color"
-              id="color"
-              value={color}
-              onChange={(e) => setColor(e.target.value)}
-              className="w-full p-1 border rounded"
+            <Circle
+              colors={defaultColors}
+              color={color}
+              pointProps={{
+                style: {
+                  marginRight: 20,
+                  height: 20,
+                  width: 20,
+                },
+              }}
+              onChange={(color) => {
+                setColor(color.hex);
+              }}
             />
           </div>
           <button type="submit" className="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600">

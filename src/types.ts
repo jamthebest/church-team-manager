@@ -6,7 +6,7 @@ export interface Team {
 
 export interface Competition {
   id: string;
-  type: '1vs1' | '2vs2' | 'todosVsTodos' | 'arbitraria';
+  type: '1 vs 1' | '2 vs 2' | 'Todos Vs Todos' | 'Arbitraria';
   teams: string[];
   scores: number[];
   description: string;
