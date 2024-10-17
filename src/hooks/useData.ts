@@ -14,7 +14,7 @@ export interface ApiResult {
     'Tipo de competencia':
         | '1 vs 1'
         | '2 vs 2'
-        | 'Todos Vs Todos'
+        | 'Todos vs Todos'
         | 'Arbitraria';
     Descripcion: string;
     Equipo1: string;
@@ -43,7 +43,7 @@ export interface ApiError {
     error: string;
 }
 
-const API_URL = import.meta.env.VITE_API_URL;
+const API_URL = '/api';
 const API_KEY = import.meta.env.VITE_API_KEY;
 
 const useData = () => {
@@ -99,6 +99,14 @@ const useData = () => {
             );
     };
 
+    const catchError = (response: Error, callback: () => void) => {
+        if (response.message === 'Failed to fetch') {
+            callback();
+        } else {
+            setError(response.message);
+        }
+    };
+
     const addTeam = (newTeam: Team) => {
         const team: ApiTeam = {
             Nombre: newTeam.name,
@@ -123,6 +131,9 @@ const useData = () => {
                 } else {
                     setError('Error al agregar el equipo');
                 }
+            })
+            .catch((e) => {
+                catchError(e, () => setTeams([...teams, newTeam]));
             });
     };
 
@@ -139,6 +150,7 @@ const useData = () => {
             },
             body: JSON.stringify({
                 ...team,
+                id: editedTeam.id,
                 key: API_KEY,
                 action: 'update',
                 sheet: 'Equipos',
@@ -155,6 +167,15 @@ const useData = () => {
                 } else {
                     setError('Error al actualizar el equipo');
                 }
+            })
+            .catch((e) => {
+                catchError(e, () =>
+                    setTeams(
+                        teams.map((curTeam) =>
+                            curTeam.id === editedTeam.id ? editedTeam : curTeam
+                        )
+                    )
+                );
             });
     };
 
@@ -165,7 +186,7 @@ const useData = () => {
                 'Content-Type': 'application/json',
             },
             body: JSON.stringify({
-                ID: id,
+                id,
                 key: API_KEY,
                 action: 'delete',
                 sheet: 'Equipos',
@@ -178,6 +199,11 @@ const useData = () => {
                 } else {
                     setError('Error al eliminar el equipo');
                 }
+            })
+            .catch((e) => {
+                catchError(e, () =>
+                    setTeams(teams.filter((team) => team.id !== id))
+                );
             });
     };
 
@@ -213,6 +239,9 @@ const useData = () => {
                 } else {
                     setError('Error al agregar el resultado');
                 }
+            })
+            .catch((e) => {
+                catchError(e, () => setResults([...results, newResult]));
             });
     };
 
@@ -237,6 +266,7 @@ const useData = () => {
             },
             body: JSON.stringify({
                 ...result,
+                id: editedResult.id,
                 key: API_KEY,
                 action: 'update',
                 sheet: 'Resultados',
@@ -255,6 +285,17 @@ const useData = () => {
                 } else {
                     setError('Error al actualizar el resultado');
                 }
+            })
+            .catch((e) => {
+                catchError(e, () =>
+                    setResults(
+                        results.map((currResult) =>
+                            currResult.id === editedResult.id
+                                ? editedResult
+                                : currResult
+                        )
+                    )
+                );
             });
     };
 
@@ -265,7 +306,7 @@ const useData = () => {
                 'Content-Type': 'application/json',
             },
             body: JSON.stringify({
-                ID: id,
+                id,
                 key: API_KEY,
                 action: 'delete',
                 sheet: 'Resultados',
@@ -278,6 +319,11 @@ const useData = () => {
                 } else {
                     setError('Error al eliminar el resultado');
                 }
+            })
+            .catch((e) => {
+                catchError(e, () =>
+                    setResults(results.filter((result) => result.id !== id))
+                );
             });
     };
 
@@ -301,6 +347,9 @@ const useData = () => {
                 } else {
                     setError('Error al actualizar la tabla de posiciones');
                 }
+            })
+            .catch((e) => {
+                catchError(e, () => setScores(newScores));
             });
     };
 
