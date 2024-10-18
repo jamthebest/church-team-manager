@@ -55,8 +55,10 @@ const useData = () => {
     const [results, setResults] = useState<Competition[]>([]);
     const [scores, setScores] = useState<ApiScore[]>([]);
     const [error, setError] = useState<string | null>(null);
+    const [loading, setLoading] = useState<boolean>(false);
 
     const loadData = () => {
+        setLoading(true);
         fetch(`${API_URL}?key=${API_KEY}`)
             .then((response) => response.json())
             .then(
@@ -108,7 +110,11 @@ const useData = () => {
                     );
                     setScores(data.Posiciones);
                 }
-            );
+            )
+            .finally(() => {
+                console.log('Data loaded');
+                setLoading(false);
+            });
     };
 
     const catchError = (response: Error, callback: () => void) => {
@@ -128,6 +134,8 @@ const useData = () => {
             Nombre: newTeam.name,
             Color: newTeam.color,
         };
+
+        setLoading(true);
         fetch(`${API_URL}`, {
             method: 'POST',
             headers: {
@@ -150,7 +158,8 @@ const useData = () => {
             })
             .catch((e) => {
                 catchError(e, () => setTeams([...teams, newTeam]));
-            });
+            })
+            .finally(() => setLoading(false));
     };
 
     const manageUpdateSuccess = async (editedTeam: Team) => {
@@ -187,6 +196,8 @@ const useData = () => {
             Nombre: editedTeam.name,
             Color: editedTeam.color,
         };
+
+        setLoading(true);
         fetch(`${API_URL}`, {
             method: 'POST',
             headers: {
@@ -210,10 +221,12 @@ const useData = () => {
             })
             .catch((e) => {
                 catchError(e, () => manageUpdateSuccess(editedTeam));
-            });
+            })
+            .finally(() => setLoading(false));
     };
 
     const deleteTeam = (id: string) => {
+        setLoading(true);
         fetch(`${API_URL}`, {
             method: 'POST',
             headers: {
@@ -238,7 +251,8 @@ const useData = () => {
                 catchError(e, () =>
                     setTeams(teams.filter((team) => team.id !== id))
                 );
-            });
+            })
+            .finally(() => setLoading(false));
     };
 
     const addResult = (newResult: Competition) => {
@@ -258,6 +272,8 @@ const useData = () => {
             Equipo6: newResult.teams[5],
             Puntos6: newResult.scores[5],
         };
+
+        setLoading(true);
         fetch(`${API_URL}`, {
             method: 'POST',
             headers: {
@@ -280,7 +296,8 @@ const useData = () => {
             })
             .catch((e) => {
                 catchError(e, () => setResults([...results, newResult]));
-            });
+            })
+            .finally(() => setLoading(false));
     };
 
     const updateResult = (editedResult: Competition) => {
@@ -301,6 +318,8 @@ const useData = () => {
             Equipo6: editedResult.teams[5],
             Puntos6: editedResult.scores[5],
         };
+
+        setLoading(true);
         fetch(`${API_URL}`, {
             method: 'POST',
             headers: {
@@ -338,10 +357,12 @@ const useData = () => {
                         )
                     )
                 );
-            });
+            })
+            .finally(() => setLoading(false));
     };
 
     const deleteResult = (id: string) => {
+        setLoading(true);
         fetch(`${API_URL}`, {
             method: 'POST',
             headers: {
@@ -366,10 +387,12 @@ const useData = () => {
                 catchError(e, () =>
                     setResults(results.filter((result) => result.id !== id))
                 );
-            });
+            })
+            .finally(() => setLoading(false));
     };
 
     const updateScoreTable = (newScores: ApiScore[]) => {
+        setLoading(true);
         fetch(`${API_URL}`, {
             method: 'POST',
             headers: {
@@ -392,7 +415,8 @@ const useData = () => {
             })
             .catch((e) => {
                 catchError(e, () => setScores(newScores));
-            });
+            })
+            .finally(() => setLoading(false));
     };
 
     return {
@@ -408,6 +432,7 @@ const useData = () => {
         updateScoreTable,
         loadData,
         error,
+        loading,
     };
 };
 

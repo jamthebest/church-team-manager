@@ -28,6 +28,7 @@ function App() {
         deleteTeam,
         addResult,
         loadData,
+        loading,
     } = useData();
     const [activeTab, setActiveTab] = useState<TabEnum>(TabEnum.TEAMS);
 
@@ -68,13 +69,18 @@ function App() {
             {activeTab === TabEnum.TEAMS && (
                 <TeamTab
                     teams={teams}
+                    loading={loading}
                     onAddTeam={addTeam}
                     onEditTeam={updateTeam}
                     onDeleteTeam={deleteTeam}
                 />
             )}
             {activeTab === TabEnum.COMPETITIONS && (
-                <CompetitionsTab teams={teams} onAddCompetition={addResult} />
+                <CompetitionsTab
+                    teams={teams}
+                    loading={loading}
+                    onAddCompetition={addResult}
+                />
             )}
             {activeTab === TabEnum.RESULTS && (
                 <ResultTab competitions={results} teams={teams} />

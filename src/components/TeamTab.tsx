@@ -3,9 +3,11 @@ import { Team } from '../types';
 import { Pencil, Trash2, Check, X } from 'lucide-react';
 import { defaultColors } from '../constants';
 import Circle from '@uiw/react-color-circle';
+import Loader from './Loader';
 
 interface TeamTabProps {
     teams: Team[];
+    loading: boolean;
     onAddTeam: (team: Team) => void;
     onEditTeam: (team: Team) => void;
     onDeleteTeam: (id: string) => void;
@@ -13,6 +15,7 @@ interface TeamTabProps {
 
 const TeamTab: React.FC<TeamTabProps> = ({
     teams,
+    loading,
     onAddTeam,
     onEditTeam,
     onDeleteTeam,
@@ -50,6 +53,7 @@ const TeamTab: React.FC<TeamTabProps> = ({
 
     return (
         <div className="space-y-6">
+            <Loader isOpen={loading} />
             <div className="bg-white rounded-lg shadow p-4 sm:p-6">
                 <form onSubmit={handleSubmit} className="space-y-4">
                     <h2 className="text-xl font-semibold">Agregar Equipo</h2>

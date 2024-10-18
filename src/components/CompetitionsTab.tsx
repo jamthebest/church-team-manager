@@ -1,13 +1,16 @@
 import React, { useState, useEffect, useCallback } from 'react';
 import { Competition, Team } from '../types';
+import Loader from './Loader';
 
 interface CompetitionTabProps {
     teams: Team[];
+    loading: boolean;
     onAddCompetition: (newCompetition: Competition) => void;
 }
 
 const CompetitionsTab: React.FC<CompetitionTabProps> = ({
     teams,
+    loading,
     onAddCompetition: onAddCompetition,
 }) => {
     const [type, setType] = useState<Competition['type']>('1 vs 1');
@@ -357,6 +360,7 @@ const CompetitionsTab: React.FC<CompetitionTabProps> = ({
 
     return (
         <div className="bg-white rounded-lg shadow p-4 sm:p-6">
+            <Loader isOpen={loading} />
             <form onSubmit={handleSubmit} className="space-y-6">
                 <h2 className="text-xl font-semibold">Agregar Competencia</h2>
                 <div>
