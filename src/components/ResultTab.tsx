@@ -22,7 +22,6 @@ const ResultTab: React.FC<ResultsTabProps> = ({ competitions, teams }) => {
 
     const getTeamById = (id: string) =>
         teams.find((team) => team.id === id || team.name === id);
-    console.log(teams, competitions, filteredCompetitions);
 
     return (
         <div className="bg-white rounded-lg shadow p-4 sm:p-6">

@@ -166,8 +166,20 @@ const useData = () => {
         const currentTeam = teams.find(
             (team) => team.id === editedTeam.id && team.name !== editedTeam.name
         );
+        const newResults = results.map((result) => {
+            const newTeams = result.teams.map((team) =>
+                team === currentTeam?.name ? editedTeam.name : team
+            );
+            return {
+                ...result,
+                teams: newTeams,
+            };
+        });
         await new Promise<void>(() => {
-            if (!currentTeam) return;
+            if (!currentTeam) {
+                setLoading(false);
+                return;
+            }
             return Promise.all(
                 results
                     .filter((result) => result.teams.includes(currentTeam.name))
@@ -175,18 +187,23 @@ const useData = () => {
                         const newTeams = currentResult.teams.map((team) =>
                             team === currentTeam.name ? editedTeam.name : team
                         );
-                        return updateResult({
-                            ...currentResult,
-                            teams: newTeams,
-                        });
+                        return updateResult(
+                            {
+                                ...currentResult,
+                                teams: newTeams,
+                            },
+                            true
+                        );
                     })
-            );
-        }).then(() => {
-            setTeams(
-                teams.map((curTeam) =>
-                    curTeam.id === editedTeam.id ? editedTeam : curTeam
-                )
-            );
+            ).finally(() => {
+                setTeams(
+                    teams.map((curTeam) =>
+                        curTeam.id === editedTeam.id ? editedTeam : curTeam
+                    )
+                );
+                setResults(newResults);
+                setLoading(false);
+            });
         });
     };
 
@@ -214,15 +231,14 @@ const useData = () => {
             .then((response) => response.json())
             .then((response: ApiResponse) => {
                 if (response.result === 'Success') {
-                    manageUpdateSuccess(editedTeam);
+                    return manageUpdateSuccess(editedTeam);
                 } else {
                     setError('Error al actualizar el equipo');
                 }
             })
             .catch((e) => {
                 catchError(e, () => manageUpdateSuccess(editedTeam));
-            })
-            .finally(() => setLoading(false));
+            });
     };
 
     const deleteTeam = (id: string) => {
@@ -300,7 +316,10 @@ const useData = () => {
             .finally(() => setLoading(false));
     };
 
-    const updateResult = (editedResult: Competition) => {
+    const updateResult = async (
+        editedResult: Competition,
+        comeFromTeam = false
+    ) => {
         const result: ApiResult = {
             ID: editedResult.id,
             'Tipo de competencia': editedResult.type,
@@ -320,7 +339,7 @@ const useData = () => {
         };
 
         setLoading(true);
-        fetch(`${API_URL}`, {
+        return fetch(`${API_URL}`, {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',
@@ -358,7 +377,7 @@ const useData = () => {
                     )
                 );
             })
-            .finally(() => setLoading(false));
+            .finally(() => setLoading(comeFromTeam));
     };
 
     const deleteResult = (id: string) => {
