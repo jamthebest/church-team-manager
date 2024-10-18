@@ -153,6 +153,34 @@ const useData = () => {
             });
     };
 
+    const manageUpdateSuccess = async (editedTeam: Team) => {
+        const currentTeam = teams.find(
+            (team) => team.id === editedTeam.id && team.name !== editedTeam.name
+        );
+        await new Promise<void>(() => {
+            if (!currentTeam) return;
+            return Promise.all(
+                results
+                    .filter((result) => result.teams.includes(currentTeam.name))
+                    .map((currentResult) => {
+                        const newTeams = currentResult.teams.map((team) =>
+                            team === currentTeam.name ? editedTeam.name : team
+                        );
+                        return updateResult({
+                            ...currentResult,
+                            teams: newTeams,
+                        });
+                    })
+            );
+        }).then(() => {
+            setTeams(
+                teams.map((curTeam) =>
+                    curTeam.id === editedTeam.id ? editedTeam : curTeam
+                )
+            );
+        });
+    };
+
     const updateTeam = (editedTeam: Team) => {
         const team: ApiTeam = {
             ID: editedTeam.id,
@@ -175,23 +203,13 @@ const useData = () => {
             .then((response) => response.json())
             .then((response: ApiResponse) => {
                 if (response.result === 'Success') {
-                    setTeams(
-                        teams.map((curTeam) =>
-                            curTeam.id === editedTeam.id ? editedTeam : curTeam
-                        )
-                    );
+                    manageUpdateSuccess(editedTeam);
                 } else {
                     setError('Error al actualizar el equipo');
                 }
             })
             .catch((e) => {
-                catchError(e, () =>
-                    setTeams(
-                        teams.map((curTeam) =>
-                            curTeam.id === editedTeam.id ? editedTeam : curTeam
-                        )
-                    )
-                );
+                catchError(e, () => manageUpdateSuccess(editedTeam));
             });
     };
 

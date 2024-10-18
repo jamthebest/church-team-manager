@@ -19,7 +19,7 @@ const TeamTab: React.FC<TeamTabProps> = ({
 }) => {
     const [teamName, setTeamName] = useState('');
     const [color, setColor] = useState('#000000');
-    const [editingTeam, setEditingTeam] = useState<string | null>(null);
+    const [editingTeam, setEditingTeam] = useState<Team | null>(null);
 
     const handleSubmit = (e: React.FormEvent) => {
         e.preventDefault();
@@ -35,8 +35,8 @@ const TeamTab: React.FC<TeamTabProps> = ({
         }
     };
 
-    const startEditing = (id: string) => {
-        setEditingTeam(id);
+    const startEditing = (team: Team) => {
+        setEditingTeam(team);
     };
 
     const cancelTeamEditing = () => {
@@ -104,14 +104,14 @@ const TeamTab: React.FC<TeamTabProps> = ({
                             key={selectedTeam.id}
                             className="border rounded p-3"
                         >
-                            {editingTeam === selectedTeam.id ? (
+                            {editingTeam?.id === selectedTeam.id ? (
                                 <div className="space-y-2">
                                     <input
                                         type="text"
-                                        value={selectedTeam.name}
+                                        value={editingTeam.name}
                                         onChange={(e) =>
-                                            onEditTeam({
-                                                ...selectedTeam,
+                                            setEditingTeam({
+                                                ...editingTeam,
                                                 name: e.target.value,
                                             })
                                         }
@@ -119,7 +119,7 @@ const TeamTab: React.FC<TeamTabProps> = ({
                                     />
                                     <Circle
                                         colors={defaultColors}
-                                        color={color}
+                                        color={editingTeam.color}
                                         pointProps={{
                                             style: {
                                                 marginRight: 20,
@@ -128,13 +128,16 @@ const TeamTab: React.FC<TeamTabProps> = ({
                                             },
                                         }}
                                         onChange={(color) => {
-                                            setColor(color.hex);
+                                            setEditingTeam({
+                                                ...editingTeam,
+                                                color: color.hex,
+                                            });
                                         }}
                                     />
                                     <div className="flex justify-end space-x-2">
                                         <button
                                             onClick={() =>
-                                                updateTeam(selectedTeam)
+                                                updateTeam(editingTeam)
                                             }
                                             className="text-green-500 hover:text-green-700"
                                             title="Guardar cambios"
@@ -165,7 +168,7 @@ const TeamTab: React.FC<TeamTabProps> = ({
                                     <div className="flex space-x-2">
                                         <button
                                             onClick={() =>
-                                                startEditing(selectedTeam.id)
+                                                startEditing(selectedTeam)
                                             }
                                             className="text-blue-500 hover:text-blue-700"
                                             title="Editar equipo"
