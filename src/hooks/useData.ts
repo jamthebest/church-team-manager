@@ -25,6 +25,10 @@ export interface ApiResult {
     Puntos3?: number;
     Equipo4?: string;
     Puntos4?: number;
+    Equipo5?: string;
+    Puntos5?: number;
+    Equipo6?: string;
+    Puntos6?: number;
 }
 
 export interface ApiScore {
@@ -85,6 +89,14 @@ const useData = () => {
                                 teams.push(result.Equipo4);
                                 scores.push(result.Puntos4 ?? 0);
                             }
+                            if (result.Equipo5 && result.Puntos5) {
+                                teams.push(result.Equipo5);
+                                scores.push(result.Puntos5 ?? 0);
+                            }
+                            if (result.Equipo6 && result.Puntos6) {
+                                teams.push(result.Equipo6);
+                                scores.push(result.Puntos6 ?? 0);
+                            }
                             return {
                                 id: result.ID ?? '',
                                 type: result['Tipo de competencia'],
@@ -108,6 +120,10 @@ const useData = () => {
     };
 
     const addTeam = (newTeam: Team) => {
+        if (teams.length >= 6) {
+            setError('No se pueden agregar más de 6 equipos');
+            return;
+        }
         const team: ApiTeam = {
             Nombre: newTeam.name,
             Color: newTeam.color,
@@ -219,6 +235,10 @@ const useData = () => {
             Puntos3: newResult.scores[2],
             Equipo4: newResult.teams[3],
             Puntos4: newResult.scores[3],
+            Equipo5: newResult.teams[4],
+            Puntos5: newResult.scores[4],
+            Equipo6: newResult.teams[5],
+            Puntos6: newResult.scores[5],
         };
         fetch(`${API_URL}`, {
             method: 'POST',
@@ -258,6 +278,10 @@ const useData = () => {
             Puntos3: editedResult.scores[2],
             Equipo4: editedResult.teams[3],
             Puntos4: editedResult.scores[3],
+            Equipo5: editedResult.teams[4],
+            Puntos5: editedResult.scores[4],
+            Equipo6: editedResult.teams[5],
+            Puntos6: editedResult.scores[5],
         };
         fetch(`${API_URL}`, {
             method: 'POST',
