@@ -117,16 +117,19 @@ const TeamTab: React.FC<TeamTabProps> = ({
                                         }
                                         className="w-full p-1 border rounded"
                                     />
-                                    <input
-                                        type="color"
-                                        value={selectedTeam.color}
-                                        onChange={(e) =>
-                                            onEditTeam({
-                                                ...selectedTeam,
-                                                color: e.target.value,
-                                            })
-                                        }
-                                        className="w-full p-1 border rounded"
+                                    <Circle
+                                        colors={defaultColors}
+                                        color={color}
+                                        pointProps={{
+                                            style: {
+                                                marginRight: 20,
+                                                height: 20,
+                                                width: 20,
+                                            },
+                                        }}
+                                        onChange={(color) => {
+                                            setColor(color.hex);
+                                        }}
                                     />
                                     <div className="flex justify-end space-x-2">
                                         <button
