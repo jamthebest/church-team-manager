@@ -3,43 +3,47 @@ import { Competition, Team } from '../types';
 
 export const tabName = 'Equipos';
 
-export interface ApiTeam {
-    ID?: string;
-    Nombre: string;
-    Color: string;
+export interface ApiTeamRequest {
+    id?: string;
+    name: string;
+    color: string;
 }
 
-export interface ApiResult {
-    ID?: string;
-    'Tipo de competencia':
-        | '1 vs 1'
-        | '2 vs 2'
-        | 'Todos vs Todos'
-        | 'Arbitraria';
-    Descripcion: string;
-    Equipo1: string;
-    Puntos1: number;
-    Equipo2?: string;
-    Puntos2?: number;
-    Equipo3?: string;
-    Puntos3?: number;
-    Equipo4?: string;
-    Puntos4?: number;
-    Equipo5?: string;
-    Puntos5?: number;
-    Equipo6?: string;
-    Puntos6?: number;
+export interface ApiTeamResponse {
+    id: string;
+    name: string;
+    color: string;
+    Point: ApiPointResponse[];
+}
+
+export interface ApiPointResponse {
+    id: string;
+    teamId: string;
+    competitionId: string;
+    point: number;
+}
+
+export interface ApiResultRequest {
+    id?: string;
+    type: '1 vs 1' | '2 vs 2' | 'Todos vs Todos' | 'Individual';
+    description: string;
+    teams: string[];
+    points: number[];
+}
+
+export interface ApiResultResponse {
+    id: string;
+    type: '1 vs 1' | '2 vs 2' | 'Todos vs Todos' | 'Individual';
+    description: string;
+    date: Date;
+    teams: ApiTeamResponse[];
+    points: ApiPointResponse[];
 }
 
 export interface ApiScore {
     Posicion: string;
     Equipo: string;
     Puntos: number;
-}
-
-export interface ApiResponse {
-    result: 'Success' | 'Error';
-    data: { ID: string } | null;
 }
 
 export interface ApiError {
@@ -49,7 +53,8 @@ export interface ApiError {
 
 // const API_URL = '/api';
 const API_URL = import.meta.env.VITE_API_URL;
-const API_KEY = import.meta.env.VITE_API_KEY;
+const TEAM_PATH = 'team';
+const RESULT_PATH = 'competition';
 
 const useData = () => {
     const [teams, setTeams] = useState<Team[]>([]);
@@ -60,70 +65,53 @@ const useData = () => {
 
     const loadData = () => {
         setLoading(true);
-        fetch(`${API_URL}?key=${API_KEY}`)
+        // fetch teams
+        fetch(`${API_URL}/${TEAM_PATH}`)
             .then((response) => response.json())
-            .then(
-                (data: {
-                    Equipos: ApiTeam[];
-                    Resultados: ApiResult[];
-                    Posiciones: ApiScore[];
-                }) => {
-                    setTeams(
-                        data.Equipos.map((team) => ({
-                            id: team.ID ?? '',
-                            name: team.Nombre,
-                            color: team.Color,
-                        }))
-                    );
-                    setResults(
-                        data.Resultados.map((result) => {
-                            const teams = [result.Equipo1];
-                            const scores = [result.Puntos1];
-
-                            if (result.Equipo2 && result.Puntos2) {
-                                teams.push(result.Equipo2);
-                                scores.push(result.Puntos2 ?? 0);
-                            }
-                            if (result.Equipo3 && result.Puntos3) {
-                                teams.push(result.Equipo3);
-                                scores.push(result.Puntos3 ?? 0);
-                            }
-                            if (result.Equipo4 && result.Puntos4) {
-                                teams.push(result.Equipo4);
-                                scores.push(result.Puntos4 ?? 0);
-                            }
-                            if (result.Equipo5 && result.Puntos5) {
-                                teams.push(result.Equipo5);
-                                scores.push(result.Puntos5 ?? 0);
-                            }
-                            if (result.Equipo6 && result.Puntos6) {
-                                teams.push(result.Equipo6);
-                                scores.push(result.Puntos6 ?? 0);
-                            }
-                            return {
-                                id: result.ID ?? '',
-                                type: result['Tipo de competencia'],
-                                description: result.Descripcion,
-                                teams,
-                                scores,
-                            };
-                        })
-                    );
-                    setScores(data.Posiciones);
-                }
-            )
+            .then((data: ApiTeamResponse[]) => {
+                const newScores: ApiScore[] = data
+                    .reduce((acc, team) => {
+                        const totalPoints = team.Point.reduce(
+                            (total, point) => total + point.point,
+                            0
+                        );
+                        acc.push({
+                            Posicion: team.id,
+                            Equipo: team.name,
+                            Puntos: totalPoints,
+                        });
+                        return acc;
+                    }, [] as ApiScore[])
+                    .sort((a, b) => b.Puntos - a.Puntos);
+                setTeams(
+                    data.map((team) => ({
+                        id: team.id ?? '',
+                        name: team.name,
+                        color: team.color,
+                    }))
+                );
+                setScores(newScores);
+                return fetch(`${API_URL}/${RESULT_PATH}`);
+            })
+            .then((response) => response.json())
+            .then((data: ApiResultResponse[]) => {
+                const newResults = data.map((result) => {
+                    const teams = result.teams.map((team) => team.name);
+                    const scores = result.points.map((point) => point.point);
+                    return {
+                        id: result.id ?? '',
+                        type: result.type,
+                        description: result.description,
+                        teams,
+                        scores,
+                    };
+                });
+                setResults(newResults);
+            })
             .finally(() => {
                 console.log('Data loaded');
                 setLoading(false);
             });
-    };
-
-    const catchError = (response: Error, callback: () => void) => {
-        if (response.message === 'Failed to fetch') {
-            callback();
-        } else {
-            setError(response.message);
-        }
     };
 
     const addTeam = (newTeam: Team) => {
@@ -131,188 +119,120 @@ const useData = () => {
             setError('No se pueden agregar más de 6 equipos');
             return;
         }
-        const team: ApiTeam = {
-            Nombre: newTeam.name,
-            Color: newTeam.color,
+        const team: ApiTeamRequest = {
+            name: newTeam.name,
+            color: newTeam.color,
         };
 
         setLoading(true);
-        fetch(`${API_URL}`, {
+        fetch(`${API_URL}/${TEAM_PATH}`, {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',
             },
-            body: JSON.stringify({
-                ...team,
-                key: API_KEY,
-                action: 'create',
-                sheet: 'Equipos',
-            }),
+            body: JSON.stringify(team),
         })
             .then((response) => response.json())
-            .then((response: ApiResponse) => {
-                if (response.result === 'Success') {
-                    setTeams([...teams, newTeam]);
+            .then((response: ApiTeamResponse) => {
+                if (response.id) {
+                    setTeams([...teams, { ...newTeam, id: response.id }]);
                 } else {
                     setError('Error al agregar el equipo');
                 }
             })
             .catch((e) => {
-                catchError(e, () => setTeams([...teams, newTeam]));
+                console.error(e);
+                setError('Error al agregar el equipo');
             })
             .finally(() => setLoading(false));
     };
 
-    const manageUpdateSuccess = async (editedTeam: Team) => {
-        const currentTeam = teams.find(
-            (team) => team.id === editedTeam.id && team.name !== editedTeam.name
-        );
-        const newResults = results.map((result) => {
-            const newTeams = result.teams.map((team) =>
-                team === currentTeam?.name ? editedTeam.name : team
-            );
-            return {
-                ...result,
-                teams: newTeams,
-            };
-        });
-        await new Promise<void>(() => {
-            if (!currentTeam) {
-                setLoading(false);
-                return;
-            }
-            return Promise.all(
-                results
-                    .filter((result) => result.teams.includes(currentTeam.name))
-                    .map((currentResult) => {
-                        const newTeams = currentResult.teams.map((team) =>
-                            team === currentTeam.name ? editedTeam.name : team
-                        );
-                        return updateResult(
-                            {
-                                ...currentResult,
-                                teams: newTeams,
-                            },
-                            true
-                        );
-                    })
-            ).finally(() => {
-                setTeams(
-                    teams.map((curTeam) =>
-                        curTeam.id === editedTeam.id ? editedTeam : curTeam
-                    )
-                );
-                setResults(newResults);
-                setLoading(false);
-            });
-        });
-    };
-
     const updateTeam = (editedTeam: Team) => {
-        const team: ApiTeam = {
-            ID: editedTeam.id,
-            Nombre: editedTeam.name,
-            Color: editedTeam.color,
+        const team: ApiTeamRequest = {
+            id: editedTeam.id,
+            name: editedTeam.name,
+            color: editedTeam.color,
         };
 
         setLoading(true);
-        fetch(`${API_URL}`, {
-            method: 'POST',
+        fetch(`${API_URL}/${TEAM_PATH}/${editedTeam.id}`, {
+            method: 'PATCH',
             headers: {
                 'Content-Type': 'application/json',
             },
-            body: JSON.stringify({
-                ...team,
-                id: editedTeam.id,
-                key: API_KEY,
-                action: 'update',
-                sheet: 'Equipos',
-            }),
+            body: JSON.stringify(team),
         })
             .then((response) => response.json())
-            .then((response: ApiResponse) => {
-                if (response.result === 'Success') {
-                    return manageUpdateSuccess(editedTeam);
+            .then((response: ApiTeamResponse) => {
+                if (response.id) {
+                    setTeams(
+                        teams.map((currTeam) =>
+                            currTeam.id === editedTeam.id
+                                ? editedTeam
+                                : currTeam
+                        )
+                    );
                 } else {
                     setError('Error al actualizar el equipo');
                 }
             })
             .catch((e) => {
-                catchError(e, () => manageUpdateSuccess(editedTeam));
-            });
+                console.error(e);
+                setError('Error al actualizar el equipo');
+            })
+            .finally(() => setLoading(false));
     };
 
     const deleteTeam = (id: string) => {
         setLoading(true);
-        fetch(`${API_URL}`, {
-            method: 'POST',
+        fetch(`${API_URL}/${TEAM_PATH}/${id}`, {
+            method: 'DELETE',
             headers: {
                 'Content-Type': 'application/json',
             },
-            body: JSON.stringify({
-                id,
-                key: API_KEY,
-                action: 'delete',
-                sheet: 'Equipos',
-            }),
         })
             .then((response) => response.json())
-            .then((response: ApiResponse) => {
-                if (response.result === 'Success') {
+            .then((response: ApiTeamResponse) => {
+                if (response.id) {
                     setTeams(teams.filter((team) => team.id !== id));
                 } else {
                     setError('Error al eliminar el equipo');
                 }
             })
             .catch((e) => {
-                catchError(e, () =>
-                    setTeams(teams.filter((team) => team.id !== id))
-                );
+                console.error(e);
+                setError('Error al eliminar el equipo');
             })
             .finally(() => setLoading(false));
     };
 
     const addResult = (newResult: Competition) => {
-        const result: ApiResult = {
-            'Tipo de competencia': newResult.type,
-            Descripcion: newResult.description,
-            Equipo1: newResult.teams[0],
-            Puntos1: newResult.scores[0],
-            Equipo2: newResult.teams[1],
-            Puntos2: newResult.scores[1],
-            Equipo3: newResult.teams[2],
-            Puntos3: newResult.scores[2],
-            Equipo4: newResult.teams[3],
-            Puntos4: newResult.scores[3],
-            Equipo5: newResult.teams[4],
-            Puntos5: newResult.scores[4],
-            Equipo6: newResult.teams[5],
-            Puntos6: newResult.scores[5],
+        const result: ApiResultRequest = {
+            type: newResult.type,
+            description: newResult.description,
+            teams: newResult.teams,
+            points: newResult.scores,
         };
 
         setLoading(true);
-        fetch(`${API_URL}`, {
+        fetch(`${API_URL}/${RESULT_PATH}`, {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',
             },
-            body: JSON.stringify({
-                ...result,
-                key: API_KEY,
-                action: 'create',
-                sheet: 'Resultados',
-            }),
+            body: JSON.stringify(result),
         })
             .then((response) => response.json())
-            .then((response: ApiResponse) => {
-                if (response.result === 'Success') {
-                    setResults([...results, newResult]);
+            .then((response: ApiResultResponse) => {
+                if (response.id) {
+                    setResults([...results, { ...newResult, id: response.id }]);
                 } else {
                     setError('Error al agregar el resultado');
                 }
             })
             .catch((e) => {
-                catchError(e, () => setResults([...results, newResult]));
+                console.error(e);
+                setError('Error al agregar el resultado');
             })
             .finally(() => setLoading(false));
     };
@@ -321,41 +241,25 @@ const useData = () => {
         editedResult: Competition,
         comeFromTeam = false
     ) => {
-        const result: ApiResult = {
-            ID: editedResult.id,
-            'Tipo de competencia': editedResult.type,
-            Descripcion: editedResult.description,
-            Equipo1: editedResult.teams[0],
-            Puntos1: editedResult.scores[0],
-            Equipo2: editedResult.teams[1],
-            Puntos2: editedResult.scores[1],
-            Equipo3: editedResult.teams[2],
-            Puntos3: editedResult.scores[2],
-            Equipo4: editedResult.teams[3],
-            Puntos4: editedResult.scores[3],
-            Equipo5: editedResult.teams[4],
-            Puntos5: editedResult.scores[4],
-            Equipo6: editedResult.teams[5],
-            Puntos6: editedResult.scores[5],
+        const result: ApiResultRequest = {
+            id: editedResult.id,
+            type: editedResult.type,
+            description: editedResult.description,
+            teams: editedResult.teams,
+            points: editedResult.scores,
         };
 
         setLoading(true);
-        return fetch(`${API_URL}`, {
-            method: 'POST',
+        return fetch(`${API_URL}/${RESULT_PATH}/${editedResult.id}`, {
+            method: 'PATCH',
             headers: {
                 'Content-Type': 'application/json',
             },
-            body: JSON.stringify({
-                ...result,
-                id: editedResult.id,
-                key: API_KEY,
-                action: 'update',
-                sheet: 'Resultados',
-            }),
+            body: JSON.stringify(result),
         })
             .then((response) => response.json())
-            .then((response: ApiResponse) => {
-                if (response.result === 'Success') {
+            .then((response: ApiResultResponse) => {
+                if (response.id) {
                     setResults(
                         results.map((currResult) =>
                             currResult.id === editedResult.id
@@ -368,73 +272,31 @@ const useData = () => {
                 }
             })
             .catch((e) => {
-                catchError(e, () =>
-                    setResults(
-                        results.map((currResult) =>
-                            currResult.id === editedResult.id
-                                ? editedResult
-                                : currResult
-                        )
-                    )
-                );
+                console.error(e);
+                setError('Error al actualizar el resultado');
             })
             .finally(() => setLoading(comeFromTeam));
     };
 
     const deleteResult = (id: string) => {
         setLoading(true);
-        fetch(`${API_URL}`, {
-            method: 'POST',
+        fetch(`${API_URL}/${RESULT_PATH}/${id}`, {
+            method: 'DELETE',
             headers: {
                 'Content-Type': 'application/json',
             },
-            body: JSON.stringify({
-                id,
-                key: API_KEY,
-                action: 'delete',
-                sheet: 'Resultados',
-            }),
         })
             .then((response) => response.json())
-            .then((response: ApiResponse) => {
-                if (response.result === 'Success') {
+            .then((response: ApiResultResponse) => {
+                if (response.id) {
                     setResults(results.filter((result) => result.id !== id));
                 } else {
                     setError('Error al eliminar el resultado');
                 }
             })
             .catch((e) => {
-                catchError(e, () =>
-                    setResults(results.filter((result) => result.id !== id))
-                );
-            })
-            .finally(() => setLoading(false));
-    };
-
-    const updateScoreTable = (newScores: ApiScore[]) => {
-        setLoading(true);
-        fetch(`${API_URL}`, {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json',
-            },
-            body: JSON.stringify({
-                key: API_KEY,
-                action: 'update',
-                sheet: 'Posiciones v2',
-                data: newScores,
-            }),
-        })
-            .then((response) => response.json())
-            .then((response: ApiResponse) => {
-                if (response.result === 'Success') {
-                    setScores(newScores);
-                } else {
-                    setError('Error al actualizar la tabla de posiciones');
-                }
-            })
-            .catch((e) => {
-                catchError(e, () => setScores(newScores));
+                console.error(e);
+                setError('Error al eliminar el resultado');
             })
             .finally(() => setLoading(false));
     };
@@ -449,7 +311,6 @@ const useData = () => {
         addResult,
         updateResult,
         deleteResult,
-        updateScoreTable,
         loadData,
         error,
         loading,
