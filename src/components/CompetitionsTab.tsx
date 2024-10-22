@@ -299,7 +299,7 @@ const CompetitionsTab: React.FC<CompetitionTabProps> = ({
                         ))}
                     </div>
                 );
-            case 'Arbitraria':
+            case 'Individual':
                 return (
                     <div className="space-y-4">
                         <div>
