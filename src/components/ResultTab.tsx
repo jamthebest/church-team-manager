@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useMemo, useState } from 'react';
 import { Competition, Team } from '../types';
 
 interface ResultsTabProps {
@@ -10,15 +10,19 @@ const ResultTab: React.FC<ResultsTabProps> = ({ competitions, teams }) => {
     const [teamFilter, setTeamFilterValue] = useState<string>('');
     const [filterType, setFilterType] = useState<string>('');
 
-    const filteredCompetitions = competitions.filter((competition) => {
-        const isTeamFilterSatisfied = teamFilter
-            ? competition.teams.map((team) => team.name).includes(teamFilter)
-            : true;
-        const isFilterTypeRule = filterType
-            ? competition.type === filterType
-            : true;
-        return isTeamFilterSatisfied && isFilterTypeRule;
-    });
+    const filteredCompetitions = useMemo(() => {
+        return competitions.filter((competition) => {
+            const isTeamFilterSatisfied = teamFilter
+                ? competition.teams
+                      .map((team) => team.id)
+                      .includes(teamFilter)
+                : true;
+            const isFilterTypeRule = filterType
+                ? competition.type === filterType
+                : true;
+            return isTeamFilterSatisfied && isFilterTypeRule;
+        });
+    }, [competitions, teamFilter, filterType]);
 
     const getTeamById = (id: string) =>
         teams.find((team) => team.id === id || team.name === id);
@@ -58,10 +62,10 @@ const ResultTab: React.FC<ResultsTabProps> = ({ competitions, teams }) => {
                         className="w-full p-2 border rounded"
                     >
                         <option value="">Todos</option>
-                        <option value="1vs1">1 vs 1</option>
-                        <option value="2vs2">2 vs 2</option>
-                        <option value="todosVsTodos">Todos vs Todos</option>
-                        <option value="arbitraria">Arbitraria</option>
+                        <option value="1 vs 1">1 vs 1</option>
+                        <option value="2 vs 2">2 vs 2</option>
+                        <option value="Todos vs Todos">Todos vs Todos</option>
+                        <option value="Individual">Individual</option>
                     </select>
                 </div>
             </div>
