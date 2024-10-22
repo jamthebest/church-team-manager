@@ -1,4 +1,5 @@
-import { useEffect, useState } from 'react';
+import { useCallback, useEffect, useState } from 'react';
+import { Message, useToaster } from 'rsuite';
 import TeamTab from './components/TeamTab';
 import CompetitionsTab from './components/CompetitionsTab';
 import ResultTab from './components/ResultTab';
@@ -30,13 +31,41 @@ function App() {
         addResult,
         loadData,
         loading,
+        error,
+        message,
+        clearMessages,
     } = useData();
     const [activeTab, setActiveTab] = useState<TabEnum>(TabEnum.TEAMS);
+    const toaster = useToaster();
 
     useEffect(() => {
         loadData();
         // eslint-disable-next-line react-hooks/exhaustive-deps
     }, []);
+
+    useEffect(() => {
+        if (error) {
+            toaster.push(Toast, { placement: 'topCenter', duration: 5000 });
+            clean();
+        }
+        if (message) {
+            toaster.push(Toast, { placement: 'topCenter', duration: 5000 });
+            clean();
+        }
+        // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [error, message]);
+
+    const clean = useCallback(() => {
+        setTimeout(() => {
+            clearMessages();
+        }, 6000);
+    }, [clearMessages]);
+
+    const Toast = (
+        <Message showIcon type={error ? 'error' : 'success'} closable>
+            <strong>{error ? 'Error' : 'Info'}!</strong> {error || message}.
+        </Message>
+    );
 
     return (
         <div className="min-h-screen bg-gray-100 p-4 sm:p-6 md:p-8">

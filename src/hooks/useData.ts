@@ -63,6 +63,12 @@ const useData = () => {
     const [scores, setScores] = useState<ApiScore[]>([]);
     const [error, setError] = useState<string | null>(null);
     const [loading, setLoading] = useState<boolean>(false);
+    const [message, setMessage] = useState<string | null>(null);
+
+    const clearMessages = () => {
+        setError(null);
+        setMessage(null);
+    };
 
     const loadData = () => {
         setLoading(true);
@@ -148,6 +154,7 @@ const useData = () => {
             .then((response: ApiTeamResponse) => {
                 if (response.id) {
                     setTeams([...teams, { ...newTeam, id: response.id }]);
+                    setMessage('Equipo agregado correctamente');
                 } else {
                     setError('Error al agregar el equipo');
                 }
@@ -184,6 +191,7 @@ const useData = () => {
                                 : currTeam
                         )
                     );
+                    setMessage('Equipo actualizado correctamente');
                 } else {
                     setError('Error al actualizar el equipo');
                 }
@@ -207,6 +215,7 @@ const useData = () => {
             .then((response: ApiTeamResponse) => {
                 if (response.id) {
                     setTeams(teams.filter((team) => team.id !== id));
+                    setMessage('Equipo eliminado correctamente');
                 } else {
                     setError('Error al eliminar el equipo');
                 }
@@ -238,6 +247,7 @@ const useData = () => {
             .then((response: ApiResultResponse) => {
                 if (response.id) {
                     setResults([...results, { ...newResult, id: response.id }]);
+                    setMessage('Resultado agregado correctamente');
                 } else {
                     setError('Error al agregar el resultado');
                 }
@@ -279,6 +289,7 @@ const useData = () => {
                                 : currResult
                         )
                     );
+                    setMessage('Resultado actualizado correctamente');
                 } else {
                     setError('Error al actualizar el resultado');
                 }
@@ -302,6 +313,7 @@ const useData = () => {
             .then((response: ApiResultResponse) => {
                 if (response.id) {
                     setResults(results.filter((result) => result.id !== id));
+                    setMessage('Resultado eliminado correctamente');
                 } else {
                     setError('Error al eliminar el resultado');
                 }
@@ -324,7 +336,9 @@ const useData = () => {
         updateResult,
         deleteResult,
         loadData,
+        clearMessages,
         error,
+        message,
         loading,
     };
 };
