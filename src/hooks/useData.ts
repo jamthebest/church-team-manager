@@ -137,6 +137,10 @@ const useData = () => {
             setError('No se pueden agregar más de 6 equipos');
             return;
         }
+        if (!newTeam.color || newTeam.color.length !== 7) {
+            setError('Seleccione un color válido');
+            return;
+        }
         const team: ApiTeamRequest = {
             name: newTeam.name,
             color: newTeam.color,

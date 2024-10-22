@@ -18,6 +18,7 @@ const CompetitionsTab: React.FC<CompetitionTabProps> = ({
     const [selectedTeams, setSelectedTeams] = useState<string[]>([]);
     const [scores, setScores] = useState<number[]>([]);
     const [description, setDescription] = useState('');
+    console.log('scores', scores);
 
     useEffect(() => {
         if (type === 'Todos vs Todos') {
@@ -25,7 +26,13 @@ const CompetitionsTab: React.FC<CompetitionTabProps> = ({
         } else {
             setSelectedTeams([]);
         }
-        setScores([]);
+        if (type === 'Todos vs Todos') {
+            setScores(teams.map(() => 0));
+        } else if (type === '2 vs 2' || type === '1 vs 1') {
+            setScores([0, 0]);
+        } else {
+            setScores([0]);
+        }
     }, [type, teams]);
 
     const updateScore = (index: number, value: number) => {
@@ -344,7 +351,9 @@ const CompetitionsTab: React.FC<CompetitionTabProps> = ({
                                         className="w-6 h-6 rounded-full"
                                         style={{ backgroundColor: team.color }}
                                     ></div>
-                                    <span>{team.name}</span>
+                                    <span style={{ minWidth: 100 }}>
+                                        {team.name}
+                                    </span>
                                 </label>
                                 <div className="flex items-center space-x-2">
                                     <label>Puntos:</label>
@@ -484,9 +493,9 @@ const CompetitionsTab: React.FC<CompetitionTabProps> = ({
                         id="type"
                         value={type}
                         onChange={(e) => {
-                            setType(e.target.value as Competition['type']);
-                            setSelectedTeams([]);
-                            setScores([]);
+                            const newType = e.target
+                                .value as Competition['type'];
+                            setType(newType);
                         }}
                         className="w-full p-2 border rounded"
                     >

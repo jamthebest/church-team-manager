@@ -21,7 +21,7 @@ const TeamTab: React.FC<TeamTabProps> = ({
     onDeleteTeam,
 }) => {
     const [teamName, setTeamName] = useState('');
-    const [color, setColor] = useState('#000000');
+    const [color, setColor] = useState('');
     const [editingTeam, setEditingTeam] = useState<Team | null>(null);
 
     const handleSubmit = (e: React.FormEvent) => {
@@ -34,7 +34,7 @@ const TeamTab: React.FC<TeamTabProps> = ({
             };
             onAddTeam(newTeam);
             setTeamName('');
-            setColor('#000000');
+            setColor('');
         }
     };
 
