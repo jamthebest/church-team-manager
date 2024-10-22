@@ -4,6 +4,7 @@ import CompetitionsTab from './components/CompetitionsTab';
 import ResultTab from './components/ResultTab';
 import TableStandings from './components/TableStandings';
 import useData from './hooks/useData';
+import 'rsuite/dist/rsuite.min.css';
 
 enum TabEnum {
     TEAMS = 'teams',

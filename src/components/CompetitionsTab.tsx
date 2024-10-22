@@ -1,5 +1,6 @@
 import React, { useState, useEffect, useCallback } from 'react';
 import { Competition, Team } from '../types';
+import { InputNumber, InputGroup } from 'rsuite';
 import Loader from './Loader';
 
 interface CompetitionTabProps {
@@ -27,6 +28,12 @@ const CompetitionsTab: React.FC<CompetitionTabProps> = ({
         setScores([]);
     }, [type, teams]);
 
+    const updateScore = (index: number, value: number) => {
+        const updatedScores = [...scores];
+        updatedScores[index] = Number(value) || 0;
+        setScores(updatedScores);
+    };
+
     const handleSubmit = (e: React.FormEvent) => {
         e.preventDefault();
         let finalPoints = [...scores];
@@ -43,9 +50,7 @@ const CompetitionsTab: React.FC<CompetitionTabProps> = ({
             const newCompetition: Competition = {
                 id: Date.now().toString(),
                 type: type,
-                teams: teams.filter((team) =>
-                    selectedTeams.includes(team.id)
-                ),
+                teams: teams.filter((team) => selectedTeams.includes(team.id)),
                 scores: finalPoints,
                 description: description.trim(),
             };
@@ -65,7 +70,8 @@ const CompetitionsTab: React.FC<CompetitionTabProps> = ({
                 (team) =>
                     (!selectedTeams.includes(team.id) &&
                         !selectedTeams.includes(team.name)) ||
-                    (team.id === teamId || team.name === teamId)
+                    team.id === teamId ||
+                    team.name === teamId
             );
         },
         [teams, selectedTeams]
@@ -135,26 +141,55 @@ const CompetitionsTab: React.FC<CompetitionTabProps> = ({
                                                 }}
                                             ></div>
                                         )}
-                                        <label className="block">
+                                        <label
+                                            className="block"
+                                            style={{ minWidth: 150 }}
+                                        >
                                             Puntos{' '}
                                             {team?.name ||
                                                 `Equipo ${index + 1}`}
                                             :
                                         </label>
-                                        <input
-                                            type="number"
-                                            value={scores[index] || 0}
-                                            onChange={(e) => {
-                                                const updatedScores = [
-                                                    ...scores,
-                                                ];
-                                                updatedScores[index] =
-                                                    Number(e.target.value) || 0;
-                                                setScores(updatedScores);
-                                            }}
-                                            className="w-20 p-1 border rounded"
-                                            min="0"
-                                        />
+                                        <InputGroup>
+                                            <InputGroup.Button
+                                                disabled={scores[index] === 0}
+                                                onClick={() => {
+                                                    updateScore(
+                                                        index,
+                                                        scores[index] - 1
+                                                    );
+                                                }}
+                                            >
+                                                -
+                                            </InputGroup.Button>
+                                            <InputNumber
+                                                className={
+                                                    'custom-input-number'
+                                                }
+                                                value={scores[index]}
+                                                min={0}
+                                                onChange={(
+                                                    val: string | number | null
+                                                ) => {
+                                                    updateScore(
+                                                        index,
+                                                        !isNaN(Number(val))
+                                                            ? Number(val)
+                                                            : 0
+                                                    );
+                                                }}
+                                            />
+                                            <InputGroup.Button
+                                                onClick={() => {
+                                                    updateScore(
+                                                        index,
+                                                        scores[index] + 1
+                                                    );
+                                                }}
+                                            >
+                                                +
+                                            </InputGroup.Button>
+                                        </InputGroup>
                                     </div>
                                 );
                             })}
@@ -238,7 +273,10 @@ const CompetitionsTab: React.FC<CompetitionTabProps> = ({
                                                 }}
                                             ></div>
                                         )}
-                                        <label className="block">
+                                        <label
+                                            className="block"
+                                            style={{ minWidth: 150 }}
+                                        >
                                             Puntos{' '}
                                             {team1?.name ||
                                                 `Equipo ${index * 2 + 1}`}{' '}
@@ -247,20 +285,46 @@ const CompetitionsTab: React.FC<CompetitionTabProps> = ({
                                                 `Equipo ${index * 2 + 2}`}
                                             :
                                         </label>
-                                        <input
-                                            type="number"
-                                            value={scores[index] || 0}
-                                            onChange={(e) => {
-                                                const clonedScores = [
-                                                    ...scores,
-                                                ];
-                                                clonedScores[index] =
-                                                    Number(e.target.value) || 0;
-                                                setScores(clonedScores);
-                                            }}
-                                            className="w-20 p-1 border rounded"
-                                            min="0"
-                                        />
+                                        <InputGroup>
+                                            <InputGroup.Button
+                                                disabled={scores[index] === 0}
+                                                onClick={() => {
+                                                    updateScore(
+                                                        index,
+                                                        scores[index] - 1
+                                                    );
+                                                }}
+                                            >
+                                                -
+                                            </InputGroup.Button>
+                                            <InputNumber
+                                                className={
+                                                    'custom-input-number'
+                                                }
+                                                value={scores[index]}
+                                                min={0}
+                                                onChange={(
+                                                    val: string | number | null
+                                                ) => {
+                                                    updateScore(
+                                                        index,
+                                                        !isNaN(Number(val))
+                                                            ? Number(val)
+                                                            : 0
+                                                    );
+                                                }}
+                                            />
+                                            <InputGroup.Button
+                                                onClick={() => {
+                                                    updateScore(
+                                                        index,
+                                                        scores[index] + 1
+                                                    );
+                                                }}
+                                            >
+                                                +
+                                            </InputGroup.Button>
+                                        </InputGroup>
                                     </div>
                                 );
                             })}
@@ -284,18 +348,44 @@ const CompetitionsTab: React.FC<CompetitionTabProps> = ({
                                 </label>
                                 <div className="flex items-center space-x-2">
                                     <label>Puntos:</label>
-                                    <input
-                                        type="number"
-                                        value={scores[index] || 0}
-                                        onChange={(e) => {
-                                            const clonedScores = [...scores];
-                                            clonedScores[index] =
-                                                Number(e.target.value) || 0;
-                                            setScores(clonedScores);
-                                        }}
-                                        className="w-20 p-1 border rounded"
-                                        min="0"
-                                    />
+                                    <InputGroup>
+                                        <InputGroup.Button
+                                            disabled={scores[index] === 0}
+                                            onClick={() => {
+                                                updateScore(
+                                                    index,
+                                                    scores[index] - 1
+                                                );
+                                            }}
+                                        >
+                                            -
+                                        </InputGroup.Button>
+                                        <InputNumber
+                                            className={'custom-input-number'}
+                                            value={scores[index]}
+                                            min={0}
+                                            onChange={(
+                                                val: string | number | null
+                                            ) => {
+                                                updateScore(
+                                                    index,
+                                                    !isNaN(Number(val))
+                                                        ? Number(val)
+                                                        : 0
+                                                );
+                                            }}
+                                        />
+                                        <InputGroup.Button
+                                            onClick={() => {
+                                                updateScore(
+                                                    index,
+                                                    scores[index] + 1
+                                                );
+                                            }}
+                                        >
+                                            +
+                                        </InputGroup.Button>
+                                    </InputGroup>
                                 </div>
                             </div>
                         ))}
@@ -337,21 +427,42 @@ const CompetitionsTab: React.FC<CompetitionTabProps> = ({
                                     }}
                                 ></div>
                             )}
-                            <label className="block">
+                            <label className="block" style={{ minWidth: 150 }}>
                                 Puntos{' '}
                                 {getTeamById(selectedTeams[0])?.name ||
                                     'Equipo'}
                                 :
                             </label>
-                            <input
-                                type="number"
-                                value={scores[0] || 0}
-                                onChange={(e) =>
-                                    setScores([Number(e.target.value) || 0])
-                                }
-                                className="w-20 p-1 border rounded"
-                                min="0"
-                            />
+                            <InputGroup>
+                                <InputGroup.Button
+                                    disabled={scores[0] === 0}
+                                    onClick={() => {
+                                        updateScore(0, scores[0] - 1);
+                                    }}
+                                >
+                                    -
+                                </InputGroup.Button>
+                                <InputNumber
+                                    className={'custom-input-number'}
+                                    value={scores[0]}
+                                    min={0}
+                                    onChange={(val: string | number | null) => {
+                                        updateScore(
+                                            0,
+                                            !isNaN(Number(val))
+                                                ? Number(val)
+                                                : 0
+                                        );
+                                    }}
+                                />
+                                <InputGroup.Button
+                                    onClick={() => {
+                                        updateScore(0, scores[0] + 1);
+                                    }}
+                                >
+                                    +
+                                </InputGroup.Button>
+                            </InputGroup>
                         </div>
                     </div>
                 );

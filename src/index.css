@@ -1,3 +1,11 @@
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
+
+.custom-input-number input {
+    text-align: center;
+}
+
+.custom-input-number .rs-input-number-btn-group-vertical {
+    display: none;
+}
