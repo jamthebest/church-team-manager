@@ -20,7 +20,7 @@ const CompetitionsTab: React.FC<CompetitionTabProps> = ({
 
     useEffect(() => {
         if (type === 'Todos vs Todos') {
-            setSelectedTeams(teams.map((team) => team.name));
+            setSelectedTeams(teams.map((team) => team.id));
         } else {
             setSelectedTeams([]);
         }
@@ -44,7 +44,7 @@ const CompetitionsTab: React.FC<CompetitionTabProps> = ({
                 id: Date.now().toString(),
                 type: type,
                 teams: teams.filter((team) =>
-                    selectedTeams.includes(team.id || team.name)
+                    selectedTeams.includes(team.id)
                 ),
                 scores: finalPoints,
                 description: description.trim(),
@@ -65,7 +65,7 @@ const CompetitionsTab: React.FC<CompetitionTabProps> = ({
                 (team) =>
                     (!selectedTeams.includes(team.id) &&
                         !selectedTeams.includes(team.name)) ||
-                    (team.id === teamId && team.name === teamId)
+                    (team.id === teamId || team.name === teamId)
             );
         },
         [teams, selectedTeams]
@@ -96,7 +96,7 @@ const CompetitionsTab: React.FC<CompetitionTabProps> = ({
                                             );
                                             if (selectedTeam) {
                                                 duplicatedTeams[index] =
-                                                    selectedTeam.name;
+                                                    selectedTeam.id;
                                             }
                                             setSelectedTeams(duplicatedTeams);
                                         }}
@@ -184,7 +184,7 @@ const CompetitionsTab: React.FC<CompetitionTabProps> = ({
                                             );
                                             if (selectedTeam) {
                                                 clonedTeams[index] =
-                                                    selectedTeam.name;
+                                                    selectedTeam.id;
                                             }
                                             setSelectedTeams(clonedTeams);
                                         }}
@@ -313,7 +313,7 @@ const CompetitionsTab: React.FC<CompetitionTabProps> = ({
                                         e.target.value
                                     );
                                     if (selectedTeam) {
-                                        setSelectedTeams([selectedTeam.name]);
+                                        setSelectedTeams([selectedTeam.id]);
                                     }
                                 }}
                                 className="w-full p-2 border rounded"
@@ -382,7 +382,7 @@ const CompetitionsTab: React.FC<CompetitionTabProps> = ({
                         <option value="1 vs 1">1 vs 1</option>
                         <option value="2 vs 2">2 vs 2</option>
                         <option value="Todos vs Todos">Todos vs Todos</option>
-                        <option value="Arbitraria">Arbitraria</option>
+                        <option value="Individual">Individual</option>
                     </select>
                 </div>
                 {renderCompetitionForm()}
