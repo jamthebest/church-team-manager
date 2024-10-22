@@ -43,7 +43,9 @@ const CompetitionsTab: React.FC<CompetitionTabProps> = ({
             const newCompetition: Competition = {
                 id: Date.now().toString(),
                 type: type,
-                teams: selectedTeams,
+                teams: teams.filter((team) =>
+                    selectedTeams.includes(team.id || team.name)
+                ),
                 scores: finalPoints,
                 description: description.trim(),
             };

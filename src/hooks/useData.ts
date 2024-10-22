@@ -20,7 +20,7 @@ export interface ApiPointResponse {
     id: string;
     teamId: string;
     competitionId: string;
-    point: number;
+    points: number;
 }
 
 export interface ApiResultRequest {
@@ -41,7 +41,8 @@ export interface ApiResultResponse {
 }
 
 export interface ApiScore {
-    Posicion: string;
+    ID: string;
+    Posicion: number;
     Equipo: string;
     Puntos: number;
 }
@@ -72,17 +73,22 @@ const useData = () => {
                 const newScores: ApiScore[] = data
                     .reduce((acc, team) => {
                         const totalPoints = team.Point.reduce(
-                            (total, point) => total + point.point,
+                            (total, point) => total + point.points,
                             0
                         );
                         acc.push({
-                            Posicion: team.id,
+                            ID: team.id,
+                            Posicion: 0,
                             Equipo: team.name,
                             Puntos: totalPoints,
                         });
                         return acc;
                     }, [] as ApiScore[])
-                    .sort((a, b) => b.Puntos - a.Puntos);
+                    .sort((a, b) => b.Puntos - a.Puntos)
+                    .map((team, index) => ({
+                        ...team,
+                        Posicion: index + 1,
+                    }));
                 setTeams(
                     data.map((team) => ({
                         id: team.id ?? '',
@@ -96,8 +102,14 @@ const useData = () => {
             .then((response) => response.json())
             .then((data: ApiResultResponse[]) => {
                 const newResults = data.map((result) => {
-                    const teams = result.teams.map((team) => team.name);
-                    const scores = result.points.map((point) => point.point);
+                    const teams: Team[] = result.teams.map((team) => {
+                        return {
+                            id: team.id,
+                            name: team.name,
+                            color: team.color,
+                        };
+                    });
+                    const scores = result.points.map((point) => point.points);
                     return {
                         id: result.id ?? '',
                         type: result.type,
@@ -210,7 +222,7 @@ const useData = () => {
         const result: ApiResultRequest = {
             type: newResult.type,
             description: newResult.description,
-            teams: newResult.teams,
+            teams: newResult.teams.map((team) => team.name),
             points: newResult.scores,
         };
 
@@ -245,7 +257,7 @@ const useData = () => {
             id: editedResult.id,
             type: editedResult.type,
             description: editedResult.description,
-            teams: editedResult.teams,
+            teams: editedResult.teams.map((team) => team.name),
             points: editedResult.scores,
         };
 

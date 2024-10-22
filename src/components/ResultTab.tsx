@@ -12,7 +12,7 @@ const ResultTab: React.FC<ResultsTabProps> = ({ competitions, teams }) => {
 
     const filteredCompetitions = competitions.filter((competition) => {
         const isTeamFilterSatisfied = teamFilter
-            ? competition.teams.includes(teamFilter)
+            ? competition.teams.map((team) => team.name).includes(teamFilter)
             : true;
         const isFilterTypeRule = filterType
             ? competition.type === filterType
@@ -84,12 +84,13 @@ const ResultTab: React.FC<ResultsTabProps> = ({ competitions, teams }) => {
                                 <td className="p-2">
                                     <div className="flex flex-wrap items-center gap-2">
                                         {competition.teams.map(
-                                            (teamId, index) => {
-                                                const team =
-                                                    getTeamById(teamId);
+                                            (currentTeam, index) => {
+                                                const team = getTeamById(
+                                                    currentTeam.id
+                                                );
                                                 return (
                                                     <div
-                                                        key={teamId}
+                                                        key={currentTeam.id}
                                                         className="flex items-center space-x-1"
                                                     >
                                                         <div

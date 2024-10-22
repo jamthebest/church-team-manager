@@ -10,9 +10,11 @@ const TableStandings: React.FC<TableStandingsProps> = ({
     teams,
     competitions,
 }) => {
-    const calculateTotalPoints = (teamName: string) => {
+    const calculateTotalPoints = (teamId: string) => {
         return competitions.reduce((total, currentCompetition) => {
-            const index = currentCompetition.teams.indexOf(teamName);
+            const index = currentCompetition.teams
+                .map((team) => team.id)
+                .indexOf(teamId);
             return (
                 total + (index !== -1 ? currentCompetition.scores[index] : 0)
             );
@@ -20,7 +22,7 @@ const TableStandings: React.FC<TableStandingsProps> = ({
     };
 
     const sortedTeams = [...teams].sort(
-        (a, b) => calculateTotalPoints(b.name) - calculateTotalPoints(a.name)
+        (a, b) => calculateTotalPoints(b.id) - calculateTotalPoints(a.id)
     );
 
     return (
@@ -47,7 +49,7 @@ const TableStandings: React.FC<TableStandingsProps> = ({
                                     <span>{team.name}</span>
                                 </td>
                                 <td className="p-2">
-                                    {calculateTotalPoints(team.name)}
+                                    {calculateTotalPoints(team.id)}
                                 </td>
                             </tr>
                         ))}
