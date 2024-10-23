@@ -18,9 +18,8 @@ const CompetitionsTab: React.FC<CompetitionTabProps> = ({
     const [selectedTeams, setSelectedTeams] = useState<string[]>([]);
     const [scores, setScores] = useState<number[]>([]);
     const [description, setDescription] = useState('');
-    console.log('scores', scores);
 
-    useEffect(() => {
+    const resetFrom = useCallback(() => {
         if (type === 'Todos vs Todos') {
             setSelectedTeams(teams.map((team) => team.id));
         } else {
@@ -34,6 +33,17 @@ const CompetitionsTab: React.FC<CompetitionTabProps> = ({
             setScores([0]);
         }
     }, [type, teams]);
+
+    useEffect(() => {
+        resetFrom();
+    }, [resetFrom]);
+
+    useEffect(() => {
+        if (!loading) {
+            resetFrom();
+            setDescription('');
+        }
+    }, [loading, resetFrom]);
 
     const updateScore = (index: number, value: number) => {
         const updatedScores = [...scores];
@@ -49,23 +59,14 @@ const CompetitionsTab: React.FC<CompetitionTabProps> = ({
             finalPoints = [scores[0], scores[0], scores[1], scores[1]];
         }
 
-        if (
-            selectedTeams.length > 0 &&
-            finalPoints.length === selectedTeams.length &&
-            description.trim()
-        ) {
-            const newCompetition: Competition = {
-                id: Date.now().toString(),
-                type: type,
-                teams: teams.filter((team) => selectedTeams.includes(team.id)),
-                scores: finalPoints,
-                description: description.trim(),
-            };
-            onAddCompetition(newCompetition);
-            setSelectedTeams([]);
-            setScores([]);
-            setDescription('');
-        }
+        const newCompetition: Competition = {
+            id: Date.now().toString(),
+            type: type,
+            teams: teams.filter((team) => selectedTeams.includes(team.id)),
+            scores: finalPoints,
+            description: description.trim(),
+        };
+        onAddCompetition(newCompetition);
     };
 
     const getTeamById = (id: string) =>

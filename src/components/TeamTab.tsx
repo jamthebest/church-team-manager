@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { Team } from '../types';
 import { Pencil, Trash2, Check, X } from 'lucide-react';
 import { defaultColors } from '../constants';
@@ -24,6 +24,11 @@ const TeamTab: React.FC<TeamTabProps> = ({
     const [color, setColor] = useState('');
     const [editingTeam, setEditingTeam] = useState<Team | null>(null);
 
+    useEffect(() => {
+        setTeamName('');
+        setColor('');
+    }, [teams]);
+
     const handleSubmit = (e: React.FormEvent) => {
         e.preventDefault();
         if (teamName.trim()) {
@@ -33,8 +38,6 @@ const TeamTab: React.FC<TeamTabProps> = ({
                 color,
             };
             onAddTeam(newTeam);
-            setTeamName('');
-            setColor('');
         }
     };
 

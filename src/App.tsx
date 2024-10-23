@@ -45,11 +45,11 @@ function App() {
 
     useEffect(() => {
         if (error) {
-            toaster.push(Toast, { placement: 'topCenter', duration: 5000 });
+            toaster.push(Toast, { placement: 'topCenter', duration: 3000 });
             clean();
         }
         if (message) {
-            toaster.push(Toast, { placement: 'topCenter', duration: 5000 });
+            toaster.push(Toast, { placement: 'topCenter', duration: 3000 });
             clean();
         }
         // eslint-disable-next-line react-hooks/exhaustive-deps

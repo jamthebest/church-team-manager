@@ -232,6 +232,39 @@ const useData = () => {
     };
 
     const addResult = (newResult: Competition) => {
+        if (!newResult.type) {
+            setError('Seleccione un tipo de competencia');
+            return;
+        }
+        if (newResult.type === '1 vs 1' && newResult.teams.length !== 2) {
+            setError('Seleccione los dos equipos');
+            return;
+        }
+        if (newResult.type === '2 vs 2' && newResult.teams.length !== 4) {
+            setError('Seleccione los cuatro equipos');
+            return;
+        }
+        if (newResult.type === 'Todos vs Todos' && newResult.teams.length < teams.length) {
+            setError('Seleccione todos los equipos');
+            return;
+        }
+        if (newResult.type === 'Individual' && newResult.teams.length !== 1) {
+            setError('Seleccione un equipo');
+            return;
+        }
+        if (newResult.scores.length !== newResult.teams.length) {
+            setError('Ingrese los puntos de todos los equipos');
+            return;
+        }
+        if (newResult.description.trim().length === 0) {
+            setError('Ingrese una descripción');
+            return;
+        }
+        if (!newResult.scores.some((score) => score > 0)) {
+            setError('No puede registrar una competencia sin puntos');
+            return;
+        }
+
         const result: ApiResultRequest = {
             type: newResult.type,
             description: newResult.description,
