@@ -178,7 +178,7 @@ const useData = () => {
         };
 
         setLoading(true);
-        fetch(`${API_URL}/${TEAM_PATH}/${editedTeam.id}`, {
+        return fetch(`${API_URL}/${TEAM_PATH}/${editedTeam.id}`, {
             method: 'PATCH',
             headers: {
                 'Content-Type': 'application/json',
@@ -209,7 +209,7 @@ const useData = () => {
 
     const deleteTeam = (id: string) => {
         setLoading(true);
-        fetch(`${API_URL}/${TEAM_PATH}/${id}`, {
+        return fetch(`${API_URL}/${TEAM_PATH}/${id}`, {
             method: 'DELETE',
             headers: {
                 'Content-Type': 'application/json',
@@ -273,7 +273,7 @@ const useData = () => {
         };
 
         setLoading(true);
-        fetch(`${API_URL}/${RESULT_PATH}`, {
+        return fetch(`${API_URL}/${RESULT_PATH}`, {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',
