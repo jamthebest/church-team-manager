@@ -1,14 +1,17 @@
-import React, { useEffect, useState } from 'react';
+import React, { useState } from 'react';
 import { Team } from '../types';
 import { Pencil, Trash2, Check, X } from 'lucide-react';
 import { defaultColors } from '../constants';
 import Circle from '@uiw/react-color-circle';
 import Loader from './Loader';
+import Dialog from './Dialog';
+import NewTeamForm, { Inputs } from './NewTeamForm';
+import { Button } from 'rsuite';
 
 interface TeamTabProps {
     teams: Team[];
     loading: boolean;
-    onAddTeam: (team: Team) => void;
+    onAddTeam: (team: Team) => Promise<void> | undefined;
     onEditTeam: (team: Team) => void;
     onDeleteTeam: (id: string) => void;
 }
@@ -20,24 +23,22 @@ const TeamTab: React.FC<TeamTabProps> = ({
     onEditTeam,
     onDeleteTeam,
 }) => {
-    const [teamName, setTeamName] = useState('');
-    const [color, setColor] = useState('');
     const [editingTeam, setEditingTeam] = useState<Team | null>(null);
+    const [isDialogOpen, setIsDialogOpen] = useState(false);
 
-    useEffect(() => {
-        setTeamName('');
-        setColor('');
-    }, [teams]);
-
-    const handleSubmit = (e: React.FormEvent) => {
-        e.preventDefault();
-        if (teamName.trim()) {
+    const handleSubmit = (data: Inputs) => {
+        if (data.name.trim()) {
             const newTeam: Team = {
                 id: Date.now().toString(),
-                name: teamName.trim(),
-                color,
+                name: data.name.trim(),
+                color: data.color,
             };
-            onAddTeam(newTeam);
+            const addTeam = onAddTeam(newTeam);
+            if (addTeam) {
+                addTeam.then(() => {
+                    setIsDialogOpen(false);
+                });
+            }
         }
     };
 
@@ -57,54 +58,20 @@ const TeamTab: React.FC<TeamTabProps> = ({
     return (
         <div className="space-y-6">
             <Loader isOpen={loading} />
+
             <div className="bg-white rounded-lg shadow p-4 sm:p-6">
-                <form onSubmit={handleSubmit} className="space-y-4">
-                    <h2 className="text-xl font-semibold">Agregar Equipo</h2>
-                    <div>
-                        <label htmlFor="nombre" className="block mb-1">
-                            Nombre:
-                        </label>
-                        <input
-                            type="text"
-                            id="nombre"
-                            value={teamName}
-                            onChange={(e) => setTeamName(e.target.value)}
-                            className="w-full p-2 border rounded"
-                            required
-                        />
-                    </div>
-                    <div>
-                        <label htmlFor="color" className="block mb-1">
-                            Color:
-                        </label>
-                        <Circle
-                            colors={defaultColors}
-                            color={color}
-                            pointProps={{
-                                style: {
-                                    marginRight: 20,
-                                    height: 20,
-                                    width: 20,
-                                },
-                            }}
-                            onChange={(color) => {
-                                setColor(color.hex);
-                            }}
-                        />
-                    </div>
-                    <button
-                        type="submit"
+                <div className="flex items-center justify-between mb-4">
+                    <h2 className="text-xl font-semibold mb-4">
+                        Equipos Agregados
+                    </h2>
+                    <Button
+                        appearance="primary"
+                        onClick={() => setIsDialogOpen(true)}
                         className="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600"
                     >
                         Agregar Equipo
-                    </button>
-                </form>
-            </div>
-
-            <div className="bg-white rounded-lg shadow p-4 sm:p-6">
-                <h2 className="text-xl font-semibold mb-4">
-                    Equipos Agregados
-                </h2>
+                    </Button>
+                </div>
                 <ul className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4">
                     {teams.map((selectedTeam) => (
                         <li
@@ -198,6 +165,14 @@ const TeamTab: React.FC<TeamTabProps> = ({
                     ))}
                 </ul>
             </div>
+
+            <Dialog
+                title="Agregar Equipo"
+                isOpen={isDialogOpen}
+                onClose={() => setIsDialogOpen(false)}
+            >
+                <NewTeamForm onSubmit={handleSubmit} />
+            </Dialog>
         </div>
     );
 };

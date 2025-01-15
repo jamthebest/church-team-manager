@@ -147,7 +147,7 @@ const useData = () => {
         };
 
         setLoading(true);
-        fetch(`${API_URL}/${TEAM_PATH}`, {
+        return fetch(`${API_URL}/${TEAM_PATH}`, {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',
