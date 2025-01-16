@@ -13,7 +13,7 @@ interface TeamTabProps {
     loading: boolean;
     onAddTeam: (team: Team) => Promise<void> | undefined;
     onEditTeam: (team: Team) => void;
-    onDeleteTeam: (id: string) => void;
+    onDeleteTeam: (id: string) => Promise<void>;
 }
 
 const TeamTab: React.FC<TeamTabProps> = ({
@@ -171,7 +171,7 @@ const TeamTab: React.FC<TeamTabProps> = ({
                 isOpen={isDialogOpen}
                 onClose={() => setIsDialogOpen(false)}
             >
-                <NewTeamForm onSubmit={handleSubmit} />
+                <NewTeamForm onSubmit={handleSubmit} onDelete={onDeleteTeam} />
             </Dialog>
         </div>
     );

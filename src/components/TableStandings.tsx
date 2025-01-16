@@ -1,10 +1,12 @@
 import React, { useState } from 'react';
 import { Team, Competition } from '../types';
-import { Button } from 'rsuite';
+import { Button, IconButton } from 'rsuite';
 import Loader from './Loader';
 import Dialog from './Dialog';
 import NewTeamForm, { Inputs } from './NewTeamForm';
 import ResultTab from './ResultTab';
+import { Pencil } from 'lucide-react';
+import { GetColor } from '../constants';
 
 interface TableStandingsProps {
     teams: Team[];
@@ -22,10 +24,11 @@ const TableStandings: React.FC<TableStandingsProps> = ({
     loading,
     addResult,
     onAddTeam,
-    // onEditTeam,
-    // onDeleteTeam,
+    onEditTeam,
+    onDeleteTeam,
 }) => {
     const [isDialogOpen, setIsDialogOpen] = useState(false);
+    const [editingTeam, setEditingTeam] = useState<Team | null>(null);
 
     const calculateTotalPoints = (teamId: string) => {
         return competitions.reduce((total, currentCompetition) => {
@@ -45,17 +48,27 @@ const TableStandings: React.FC<TableStandingsProps> = ({
     const handleSubmit = (data: Inputs) => {
         if (data.name.trim()) {
             const newTeam: Team = {
-                id: Date.now().toString(),
+                id: data.id ?? Date.now().toString(),
                 name: data.name.trim(),
                 color: data.color,
             };
-            const addTeam = onAddTeam(newTeam);
+            const addTeam = editingTeam
+                ? onEditTeam(newTeam)
+                : onAddTeam(newTeam);
             if (addTeam) {
-                addTeam.then(() => {
+                addTeam.finally(() => {
                     setIsDialogOpen(false);
+                    setEditingTeam(null);
                 });
             }
         }
+    };
+
+    const handleDelete = async (id: string) => {
+        onDeleteTeam(id).finally(() => {
+            setIsDialogOpen(false);
+            setEditingTeam(null);
+        });
     };
 
     return (
@@ -88,12 +101,17 @@ const TableStandings: React.FC<TableStandingsProps> = ({
                                 <tr key={team.id} className="border-b">
                                     <td className="p-2">{index + 1}</td>
                                     <td className="p-2 flex items-center space-x-2">
-                                        <div
-                                            className="w-6 h-6 rounded-full"
-                                            style={{
-                                                backgroundColor: team.color,
+                                        <IconButton
+                                            circle
+                                            size="xs"
+                                            appearance="ghost"
+                                            icon={<Pencil size={12} />}
+                                            color={GetColor(team.color)}
+                                            onClick={() => {
+                                                setEditingTeam(team);
+                                                setIsDialogOpen(true);
                                             }}
-                                        ></div>
+                                        ></IconButton>
                                         <span>{team.name}</span>
                                     </td>
                                     <td className="p-2">
@@ -114,11 +132,18 @@ const TableStandings: React.FC<TableStandingsProps> = ({
             />
 
             <Dialog
-                title="Agregar Equipo"
+                title={!editingTeam ? 'Agregar Equipo' : 'Editar Equipo'}
                 isOpen={isDialogOpen}
-                onClose={() => setIsDialogOpen(false)}
+                onClose={() => {
+                    setIsDialogOpen(false);
+                    setEditingTeam(null);
+                }}
             >
-                <NewTeamForm onSubmit={handleSubmit} />
+                <NewTeamForm
+                    team={editingTeam}
+                    onSubmit={handleSubmit}
+                    onDelete={handleDelete}
+                />
             </Dialog>
         </>
     );
