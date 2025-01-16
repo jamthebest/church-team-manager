@@ -1,7 +1,9 @@
+import { AvailableColors } from './constants';
+
 export interface Team {
     id: string;
     name: string;
-    color: string;
+    color: AvailableColors;
 }
 
 export interface Competition {

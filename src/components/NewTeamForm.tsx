@@ -1,10 +1,10 @@
 import { useForm, SubmitHandler, Controller } from 'react-hook-form';
 import Circle from '@uiw/react-color-circle';
-import { defaultColors } from '../constants';
+import { AvailableColors, defaultColors } from '../constants';
 
 export type Inputs = {
     name: string;
-    color: string;
+    color: AvailableColors;
 };
 
 const NewTeamForm = ({ onSubmit }: { onSubmit: SubmitHandler<Inputs> }) => {
@@ -44,7 +44,9 @@ const NewTeamForm = ({ onSubmit }: { onSubmit: SubmitHandler<Inputs> }) => {
                                 },
                             }}
                             onChange={(color) => {
-                                onChange(color.hex);
+                                onChange(
+                                    color.hex.toUpperCase() as AvailableColors
+                                );
                             }}
                         />
                     )}

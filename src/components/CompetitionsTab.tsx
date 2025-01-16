@@ -14,7 +14,7 @@ const CompetitionsTab: React.FC<CompetitionTabProps> = ({
     loading,
     onAddCompetition: onAddCompetition,
 }) => {
-    const [type, setType] = useState<Competition['type']>('1 vs 1');
+    const [type, setType] = useState<Competition['type']>('Todos vs Todos');
     const [selectedTeams, setSelectedTeams] = useState<string[]>([]);
     const [scores, setScores] = useState<number[]>([]);
     const [description, setDescription] = useState('');

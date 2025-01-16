@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { Team } from '../types';
 import { Pencil, Trash2, Check, X } from 'lucide-react';
-import { defaultColors } from '../constants';
+import { AvailableColors, defaultColors } from '../constants';
 import Circle from '@uiw/react-color-circle';
 import Loader from './Loader';
 import Dialog from './Dialog';
@@ -104,7 +104,7 @@ const TeamTab: React.FC<TeamTabProps> = ({
                                         onChange={(color) => {
                                             setEditingTeam({
                                                 ...editingTeam,
-                                                color: color.hex,
+                                                color: color.hex.toUpperCase() as AvailableColors,
                                             });
                                         }}
                                     />

@@ -1,5 +1,6 @@
 import { useState } from 'react';
 import { Competition, Team } from '../types';
+import { AvailableColors } from '../constants';
 
 export const tabName = 'Equipos';
 
@@ -12,7 +13,7 @@ export interface ApiTeamRequest {
 export interface ApiTeamResponse {
     id: string;
     name: string;
-    color: string;
+    color: AvailableColors;
     Point: ApiPointResponse[];
 }
 
@@ -244,7 +245,10 @@ const useData = () => {
             setError('Seleccione los cuatro equipos');
             return;
         }
-        if (newResult.type === 'Todos vs Todos' && newResult.teams.length < teams.length) {
+        if (
+            newResult.type === 'Todos vs Todos' &&
+            newResult.teams.length < teams.length
+        ) {
             setError('Seleccione todos los equipos');
             return;
         }
