@@ -13,6 +13,8 @@ interface TableStandingsProps {
     competitions: Competition[];
     loading: boolean;
     addResult: (competition: Competition) => Promise<void> | undefined;
+    updateResult: (competition: Competition) => Promise<void> | undefined;
+    deleteResult: (id: string) => Promise<void> | undefined;
     onAddTeam: (team: Team) => Promise<void> | undefined;
     onEditTeam: (team: Team) => Promise<void>;
     onDeleteTeam: (id: string) => Promise<void>;
@@ -23,6 +25,8 @@ const TableStandings: React.FC<TableStandingsProps> = ({
     competitions,
     loading,
     addResult,
+    updateResult,
+    deleteResult,
     onAddTeam,
     onEditTeam,
     onDeleteTeam,
@@ -128,6 +132,8 @@ const TableStandings: React.FC<TableStandingsProps> = ({
                 competitions={competitions}
                 teams={teams}
                 addResult={addResult}
+                updateResult={updateResult}
+                deleteResult={deleteResult}
                 loading={loading}
             />
 

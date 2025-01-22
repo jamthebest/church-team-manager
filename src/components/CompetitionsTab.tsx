@@ -6,20 +6,45 @@ import Loader from './Loader';
 interface CompetitionTabProps {
     teams: Team[];
     loading: boolean;
+    competition: Competition | null;
     onAddCompetition: (newCompetition: Competition) => void;
+    onUpdateCompetition: (updatedCompetition: Competition) => void;
+    onDeleteCompetition: (id: string) => void;
 }
 
 const CompetitionsTab: React.FC<CompetitionTabProps> = ({
     teams,
     loading,
-    onAddCompetition: onAddCompetition,
+    competition,
+    onAddCompetition,
+    onUpdateCompetition,
+    onDeleteCompetition,
 }) => {
-    const [type, setType] = useState<Competition['type']>('Todos vs Todos');
-    const [selectedTeams, setSelectedTeams] = useState<string[]>([]);
-    const [scores, setScores] = useState<number[]>([]);
-    const [description, setDescription] = useState('');
+    const [type, setType] = useState<Competition['type']>(
+        competition?.type ?? 'Todos vs Todos'
+    );
+    const [selectedTeams, setSelectedTeams] = useState<string[]>(
+        competition?.teams.map((team) => team.id) ?? []
+    );
+    const [scores, setScores] = useState<number[]>(competition?.scores ?? []);
+    const [description, setDescription] = useState(
+        competition?.description ?? ''
+    );
+    useEffect(() => {
+        if (!competition) {
+            return;
+        }
+        setType(competition?.type ?? 'Todos vs Todos');
+    }, [competition]);
 
     const resetFrom = useCallback(() => {
+        const needReset = competition?.type !== type;
+        if (!needReset) {
+            setSelectedTeams(competition?.teams.map((team) => team.id) ?? []);
+            setScores(competition?.scores ?? []);
+            setDescription(competition?.description ?? '');
+            return;
+        }
         if (type === 'Todos vs Todos') {
             setSelectedTeams(teams.map((team) => team.id));
         } else {
@@ -32,7 +57,7 @@ const CompetitionsTab: React.FC<CompetitionTabProps> = ({
         } else {
             setScores([0]);
         }
-    }, [type, teams]);
+    }, [type, teams, competition]);
 
     useEffect(() => {
         resetFrom();
@@ -40,8 +65,8 @@ const CompetitionsTab: React.FC<CompetitionTabProps> = ({
 
     useEffect(() => {
         if (!loading) {
-            resetFrom();
             setDescription('');
+            resetFrom();
         }
     }, [loading, resetFrom]);
 
@@ -66,7 +91,11 @@ const CompetitionsTab: React.FC<CompetitionTabProps> = ({
             scores: finalPoints,
             description: description.trim(),
         };
-        onAddCompetition(newCompetition);
+        if (!competition?.id) {
+            onAddCompetition(newCompetition);
+        } else {
+            onUpdateCompetition({ ...newCompetition, id: competition.id });
+        }
     };
 
     const getTeamById = (id: string) =>
@@ -151,12 +180,12 @@ const CompetitionsTab: React.FC<CompetitionTabProps> = ({
                                         )}
                                         <label
                                             className="block"
-                                            style={{ minWidth: 150 }}
+                                            style={{
+                                                maxWidth: 150,
+                                                whiteSpace: 'nowrap',
+                                            }}
                                         >
-                                            Puntos{' '}
-                                            {team?.name ||
-                                                `Equipo ${index + 1}`}
-                                            :
+                                            Puntos :
                                         </label>
                                         <InputGroup>
                                             <InputGroup.Button
@@ -283,15 +312,12 @@ const CompetitionsTab: React.FC<CompetitionTabProps> = ({
                                         )}
                                         <label
                                             className="block"
-                                            style={{ minWidth: 150 }}
+                                            style={{
+                                                maxWidth: 150,
+                                                whiteSpace: 'nowrap',
+                                            }}
                                         >
-                                            Puntos{' '}
-                                            {team1?.name ||
-                                                `Equipo ${index * 2 + 1}`}{' '}
-                                            y{' '}
-                                            {team2?.name ||
-                                                `Equipo ${index * 2 + 2}`}
-                                            :
+                                            Puntos :
                                         </label>
                                         <InputGroup>
                                             <InputGroup.Button
@@ -437,11 +463,14 @@ const CompetitionsTab: React.FC<CompetitionTabProps> = ({
                                     }}
                                 ></div>
                             )}
-                            <label className="block" style={{ minWidth: 150 }}>
-                                Puntos{' '}
-                                {getTeamById(selectedTeams[0])?.name ||
-                                    'Equipo'}
-                                :
+                            <label
+                                className="block"
+                                style={{
+                                    maxWidth: 150,
+                                    whiteSpace: 'nowrap',
+                                }}
+                            >
+                                Puntos :
                             </label>
                             <InputGroup>
                                 <InputGroup.Button
@@ -482,10 +511,9 @@ const CompetitionsTab: React.FC<CompetitionTabProps> = ({
     };
 
     return (
-        <div className="bg-white rounded-lg shadow p-4 sm:p-6">
+        <div className="bg-white">
             <Loader isOpen={loading} />
             <form onSubmit={handleSubmit} className="space-y-6">
-                <h2 className="text-xl font-semibold">Agregar Competencia</h2>
                 <div>
                     <label htmlFor="type" className="block mb-1">
                         Tipo de Competencia:
@@ -520,12 +548,27 @@ const CompetitionsTab: React.FC<CompetitionTabProps> = ({
                         required
                     />
                 </div>
-                <button
-                    type="submit"
-                    className="w-full sm:w-auto bg-green-500 text-white px-4 py-2 rounded hover:bg-green-600"
-                >
-                    Agregar Competencia
-                </button>
+                <div className="flex justify-end space-x-2">
+                    {!!competition && (
+                        <button
+                            type="button"
+                            onClick={() =>
+                                onDeleteCompetition(competition.id ?? '')
+                            }
+                            className="bg-red-500 text-white px-4 py-2 rounded hover:bg-red-600"
+                        >
+                            Eliminar Competencia
+                        </button>
+                    )}
+                    <button
+                        type="submit"
+                        className="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600"
+                    >
+                        {!competition
+                            ? 'Agregar Competencia'
+                            : 'Actualizar Competencia'}
+                    </button>
+                </div>
             </form>
         </div>
     );

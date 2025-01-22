@@ -344,7 +344,7 @@ const useData = () => {
 
     const deleteResult = (id: string) => {
         setLoading(true);
-        fetch(`${API_URL}/${RESULT_PATH}/${id}`, {
+        return fetch(`${API_URL}/${RESULT_PATH}/${id}`, {
             method: 'DELETE',
             headers: {
                 'Content-Type': 'application/json',

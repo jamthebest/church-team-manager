@@ -1,18 +1,23 @@
 import React, { useMemo, useState } from 'react';
 import { Competition, Team } from '../types';
-import { Button } from 'rsuite';
+import { Button, IconButton } from 'rsuite';
 import Dialog from './Dialog';
 import CompetitionsTab from './CompetitionsTab';
+import { Pencil } from 'lucide-react';
 
 interface ResultsTabProps {
     competitions: Competition[];
     teams: Team[];
     loading: boolean;
     addResult: (competition: Competition) => Promise<void> | undefined;
+    updateResult: (competition: Competition) => Promise<void> | undefined;
+    deleteResult: (id: string) => Promise<void> | undefined;
 }
 
 const ResultTab: React.FC<ResultsTabProps> = ({
     addResult,
+    updateResult,
+    deleteResult,
     competitions,
     loading,
     teams,
@@ -20,6 +25,8 @@ const ResultTab: React.FC<ResultsTabProps> = ({
     const [teamFilter, setTeamFilterValue] = useState<string>('');
     const [filterType, setFilterType] = useState<string>('');
     const [isDialogOpen, setIsDialogOpen] = useState(false);
+    const [editingCompetition, setEditingCompetition] =
+        useState<Competition | null>(null);
 
     const filteredCompetitions = useMemo(() => {
         return competitions.filter((competition) => {
@@ -38,6 +45,24 @@ const ResultTab: React.FC<ResultsTabProps> = ({
 
     const onAddCompetition = (competition: Competition) => {
         const result = addResult(competition);
+        if (result) {
+            result.then(() => {
+                setIsDialogOpen(false);
+            });
+        }
+    };
+
+    const onUpdateCompetition = (competition: Competition) => {
+        const result = updateResult(competition);
+        if (result) {
+            result.then(() => {
+                setIsDialogOpen(false);
+            });
+        }
+    };
+
+    const onDeleteCompetition = (id: string) => {
+        const result = deleteResult(id);
         if (result) {
             result.then(() => {
                 setIsDialogOpen(false);
@@ -108,6 +133,7 @@ const ResultTab: React.FC<ResultsTabProps> = ({
                                 <th className="text-left p-2">
                                     Equipos y Puntos
                                 </th>
+                                <th className="text-left p-2"></th>
                             </tr>
                         </thead>
                         <tbody>
@@ -152,6 +178,24 @@ const ResultTab: React.FC<ResultsTabProps> = ({
                                             )}
                                         </div>
                                     </td>
+                                    <td className="p-2">
+                                        <IconButton
+                                            circle
+                                            size="xs"
+                                            appearance="ghost"
+                                            icon={<Pencil size={12} />}
+                                            onClick={() => {
+                                                setEditingCompetition(
+                                                    competitions.find(
+                                                        (x) =>
+                                                            x.id ===
+                                                            competition.id
+                                                    ) ?? null
+                                                );
+                                                setIsDialogOpen(true);
+                                            }}
+                                        ></IconButton>
+                                    </td>
                                 </tr>
                             ))}
                         </tbody>
@@ -160,14 +204,24 @@ const ResultTab: React.FC<ResultsTabProps> = ({
             </div>
 
             <Dialog
-                title="Nueva Competencia"
+                title={
+                    editingCompetition
+                        ? 'Editar Competencia'
+                        : 'Nueva Competencia'
+                }
                 isOpen={isDialogOpen}
-                onClose={() => setIsDialogOpen(false)}
+                onClose={() => {
+                    setIsDialogOpen(false);
+                    setEditingCompetition(null);
+                }}
             >
                 <CompetitionsTab
                     teams={teams}
                     loading={loading}
+                    competition={editingCompetition}
                     onAddCompetition={onAddCompetition}
+                    onUpdateCompetition={onUpdateCompetition}
+                    onDeleteCompetition={onDeleteCompetition}
                 />
             </Dialog>
         </>

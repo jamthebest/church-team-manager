@@ -26,6 +26,8 @@ function App() {
         updateTeam,
         deleteTeam,
         addResult,
+        updateResult,
+        deleteResult,
         loadData,
         loading,
         error,
@@ -97,6 +99,8 @@ function App() {
                     onAddTeam={addTeam}
                     onDeleteTeam={deleteTeam}
                     onEditTeam={updateTeam}
+                    updateResult={updateResult}
+                    deleteResult={deleteResult}
                 />
             )}
         </div>
