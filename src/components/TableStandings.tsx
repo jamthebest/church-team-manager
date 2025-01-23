@@ -14,7 +14,7 @@ interface TableStandingsProps {
     loading: boolean;
     addResult: (competition: Competition) => Promise<void> | undefined;
     updateResult: (competition: Competition) => Promise<void> | undefined;
-    deleteResult: (id: string) => Promise<void> | undefined;
+    deleteResult: (id: string) => Promise<void>;
     onAddTeam: (team: Team) => Promise<void> | undefined;
     onEditTeam: (team: Team) => Promise<void>;
     onDeleteTeam: (id: string) => Promise<void>;

@@ -13,8 +13,8 @@ const Competition1Vs1 = ({
     teams,
 }: // selectedTeams,
 Competition1Vs1Props) => {
-    const { control, getValues, setValue } = useFormContext();
-    const usedTeams: Team[] = getValues('teams');
+    const { control, getValues, setValue, watch } = useFormContext();
+    const usedTeams: Team[] = watch('teams');
     const scores: number[] = getValues('scores');
 
     const mappedTeams = useMemo(() => {
@@ -23,12 +23,11 @@ Competition1Vs1Props) => {
             return acc;
         }, {} as Record<string, Team>);
     }, [teams]);
-    console.log({ values: usedTeams });
 
     return (
         <div className="space-y-4">
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                {usedTeams.map((team, index) => (
+                {usedTeams.map((team, index, allTeams) => (
                     <div key={index}>
                         <label className="block mb-1">
                             Equipo {index + 1}:
@@ -43,10 +42,16 @@ Competition1Vs1Props) => {
                             }) => (
                                 <Form.Group>
                                     <InputPicker
-                                        data={teams.map((team) => ({
-                                            label: team.name,
-                                            value: team.id,
-                                        }))}
+                                        data={teams
+                                            .filter(
+                                                (team) =>
+                                                    team.id !==
+                                                    allTeams[!index ? 1 : 0]?.id
+                                            )
+                                            .map((team) => ({
+                                                label: team.name,
+                                                value: team.id,
+                                            }))}
                                         value={value}
                                         onChange={(val: string) => {
                                             const team = mappedTeams[val];
