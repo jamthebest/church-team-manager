@@ -20,6 +20,12 @@ export const CompetitionSchema = yup.object().shape({
     scores: yup
         .array()
         .of(yup.number().required())
+        .test(
+            'at-least-one-positive',
+            'Debe haber al menos un puntaje mayor que 0',
+            (numbers) =>
+                Array.isArray(numbers) && numbers.some((num) => num > 0)
+        )
         .required('El puntaje es requerido'),
     description: yup.string().required('La descripción es requerida'),
 });

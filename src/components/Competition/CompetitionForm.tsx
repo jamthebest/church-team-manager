@@ -6,7 +6,7 @@ import {
     useForm,
 } from 'react-hook-form';
 import { yupResolver } from '@hookform/resolvers/yup';
-import { Form, InputPicker } from 'rsuite';
+import { Form, Input, InputPicker } from 'rsuite';
 import { Competition, Team } from '../../types';
 import { CompetitionSchema } from '../../schemas/Competition';
 import Competition1Vs1 from './Competition1Vs1';
@@ -171,14 +171,27 @@ const CompetitionForm = ({
                     <label htmlFor="description" className="block mb-1">
                         Descripción:
                     </label>
-                    <textarea
-                        {...register('description', {
-                            required: true,
-                            value: competition?.description,
-                        })}
-                        id="description"
-                        className="w-full p-2 border rounded"
-                        required
+                    <Controller
+                        name="description"
+                        control={control}
+                        render={({
+                            field: { value, onChange },
+                            fieldState: { error },
+                        }) => (
+                            <Form.Group>
+                                <Input
+                                    as="textarea"
+                                    value={value}
+                                    onChange={onChange}
+                                />
+                                <Form.ErrorMessage
+                                    show={!!error}
+                                    placement="bottomStart"
+                                >
+                                    {error?.message}
+                                </Form.ErrorMessage>
+                            </Form.Group>
+                        )}
                     />
                 </div>
                 <button
