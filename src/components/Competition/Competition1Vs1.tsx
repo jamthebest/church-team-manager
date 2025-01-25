@@ -5,14 +5,11 @@ import { Team } from '../../types';
 
 export interface Competition1Vs1Props {
     teams: Team[];
-    selectedTeams?: Team[];
-    scores?: number[];
+    // selectedTeams?: Team[];
+    // scores?: number[];
 }
 
-const Competition1Vs1 = ({
-    teams,
-}: // selectedTeams,
-Competition1Vs1Props) => {
+const Competition1Vs1 = ({ teams }: Competition1Vs1Props) => {
     const {
         control,
         getValues,

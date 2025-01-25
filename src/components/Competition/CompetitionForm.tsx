@@ -10,6 +10,7 @@ import { Form, Input, InputPicker } from 'rsuite';
 import { Competition, Team } from '../../types';
 import { CompetitionSchema } from '../../schemas/Competition';
 import Competition1Vs1 from './Competition1Vs1';
+import Competition2Vs2 from './Competition2vs2';
 
 export type CompetitionInputs = Omit<Competition, 'id'> & { id?: string };
 
@@ -120,7 +121,7 @@ const CompetitionForm = ({
                                                         color: '#00BCD4',
                                                     },
                                                 ]);
-                                                replaceScore([0, 0, 0, 0]);
+                                                replaceScore([0, 0]);
                                             } else if (
                                                 val === 'Todos vs Todos'
                                             ) {
@@ -162,8 +163,15 @@ const CompetitionForm = ({
                     {type === '1 vs 1' && (
                         <Competition1Vs1
                             teams={teams}
-                            selectedTeams={competition?.teams}
-                            scores={competition?.scores}
+                            // selectedTeams={competition?.teams}
+                            // scores={competition?.scores}
+                        />
+                    )}
+                    {type === '2 vs 2' && (
+                        <Competition2Vs2
+                            teams={teams}
+                            // selectedTeams={competition?.teams}
+                            // scores={competition?.scores}
                         />
                     )}
                 </div>
