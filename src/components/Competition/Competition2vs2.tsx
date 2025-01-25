@@ -50,10 +50,13 @@ const Competition2Vs2 = ({ teams }: Competition2Vs2Props) => {
                                                 data={teams
                                                     .filter(
                                                         (team) =>
-                                                            team.id !==
-                                                            allTeams[
-                                                                !index ? 1 : 0
-                                                            ]?.id
+                                                            !allTeams.some(
+                                                                (teamB, idx) =>
+                                                                    teamB.id ===
+                                                                        team.id &&
+                                                                    index !==
+                                                                        idx
+                                                            )
                                                     )
                                                     .map((team) => ({
                                                         label: team.name,
