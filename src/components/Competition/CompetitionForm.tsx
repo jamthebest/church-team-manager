@@ -13,6 +13,7 @@ import Competition1Vs1 from './Competition1Vs1';
 import Competition2Vs2 from './Competition2vs2';
 import CompetitionAllVsAll from './CompetitionAllVsAll';
 import CompetitionIndividual from './CompetitionIndividual';
+import { useEffect } from 'react';
 
 export type CompetitionInputs = Omit<Competition, 'id'> & { id?: string };
 
@@ -40,6 +41,18 @@ const CompetitionForm = ({
     } as never);
     const type = watch('type');
 
+    useEffect(() => {
+        if (competition) return;
+        replace(
+            teams.map((team) => ({
+                id: team.id,
+                name: team.name,
+                color: team.color,
+            }))
+        );
+        replaceScore(teams.map(() => 0));
+    }, [competition, replace, replaceScore, teams]);
+
     return (
         <FormProvider {...methods}>
             <form className="space-y-4" onSubmit={handleSubmit(onSubmit)}>
@@ -55,7 +68,7 @@ const CompetitionForm = ({
                         name="type"
                         control={control}
                         rules={{ required: true }}
-                        defaultValue={competition?.type}
+                        defaultValue={competition?.type ?? 'Todos vs Todos'}
                         render={({
                             field: { value, onChange },
                             fieldState: { error },
