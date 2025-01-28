@@ -1,6 +1,6 @@
 import { Controller, useFormContext } from 'react-hook-form';
 import { Team } from '../../types';
-import { useMemo } from 'react';
+import React, { useMemo } from 'react';
 import { Form, InputGroup, InputNumber, InputPicker } from 'rsuite';
 
 export interface Competition2Vs2Props {
@@ -32,7 +32,7 @@ const Competition2Vs2 = ({ teams }: Competition2Vs2Props) => {
             <Form.Group>
                 <div className="grid grid-cols-1 sm:grid-rows-3 sm:grid-cols-2 sm:grid-flow-col gap-4">
                     {usedTeams.map((team, index, allTeams) => (
-                        <>
+                        <React.Fragment key={index}>
                             <div key={index}>
                                 <label className="block mb-1">
                                     Equipo {index + 1}:
@@ -202,7 +202,7 @@ const Competition2Vs2 = ({ teams }: Competition2Vs2Props) => {
                                     />
                                 </div>
                             )}
-                        </>
+                        </React.Fragment>
                     ))}
                 </div>
                 <Form.ErrorMessage
