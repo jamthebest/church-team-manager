@@ -11,7 +11,7 @@ export const CompetitionSchema = yup.object().shape({
         .array()
         .of(
             yup.object().shape({
-                id: yup.string().required(),
+                id: yup.string().required('El equipo es requerido'),
                 name: yup.string().required(),
                 color: yup.mixed<AvailableColors>().required(),
             })

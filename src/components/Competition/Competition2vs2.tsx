@@ -1,6 +1,6 @@
+import React, { useMemo } from 'react';
 import { Controller, useFormContext } from 'react-hook-form';
 import { Team } from '../../types';
-import React, { useMemo } from 'react';
 import { Form, InputGroup, InputNumber, InputPicker } from 'rsuite';
 
 export interface Competition2Vs2Props {
