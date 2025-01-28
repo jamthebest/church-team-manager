@@ -12,6 +12,7 @@ import { CompetitionSchema } from '../../schemas/Competition';
 import Competition1Vs1 from './Competition1Vs1';
 import Competition2Vs2 from './Competition2vs2';
 import CompetitionAllVsAll from './CompetitionAllVsAll';
+import CompetitionIndividual from './CompetitionIndividual';
 
 export type CompetitionInputs = Omit<Competition, 'id'> & { id?: string };
 
@@ -176,6 +177,13 @@ const CompetitionForm = ({
                         />
                     )}
                     {type === 'Todos vs Todos' && <CompetitionAllVsAll />}
+                    {type === 'Individual' && (
+                        <CompetitionIndividual
+                            teams={teams}
+                            // selectedTeams={competition?.teams}
+                            // scores={competition?.scores}
+                        />
+                    )}
                 </div>
                 <div>
                     <label htmlFor="description" className="block mb-1">

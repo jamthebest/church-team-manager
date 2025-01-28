@@ -2,12 +2,6 @@ import { Controller, useFormContext } from 'react-hook-form';
 import { Team } from '../../types';
 import { Form, InputGroup, InputNumber } from 'rsuite';
 
-// export interface CompetitionAllVsAllProps {
-//     // teams: Team[];
-//     // selectedTeams?: Team[];
-//     // scores?: number[];
-// }
-
 const CompetitionAllVsAll = () => {
     const {
         control,
