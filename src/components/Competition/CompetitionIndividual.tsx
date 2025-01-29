@@ -5,8 +5,6 @@ import { Form, InputGroup, InputNumber, InputPicker } from 'rsuite';
 
 export interface CompetitionIndividualProps {
     teams: Team[];
-    // selectedTeams?: Team[];
-    // scores?: number[];
 }
 
 const CompetitionIndividual = ({ teams }: CompetitionIndividualProps) => {

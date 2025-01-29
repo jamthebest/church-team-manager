@@ -2,7 +2,7 @@ import { Controller, useFormContext } from 'react-hook-form';
 import { Team } from '../../types';
 import { Form, InputGroup, InputNumber } from 'rsuite';
 
-const CompetitionAllVsAll = () => {
+const CompetitionAllvsAll = () => {
     const {
         control,
         getValues,
@@ -106,4 +106,4 @@ const CompetitionAllVsAll = () => {
     );
 };
 
-export default CompetitionAllVsAll;
+export default CompetitionAllvsAll;

@@ -9,12 +9,12 @@ import { yupResolver } from '@hookform/resolvers/yup';
 import { Form, Input, InputPicker } from 'rsuite';
 import { Competition, Team } from '../../types';
 import { CompetitionSchema } from '../../schemas/Competition';
-import Competition1Vs1 from './Competition1Vs1';
-import Competition2Vs2 from './Competition2vs2';
-import CompetitionAllVsAll from './CompetitionAllVsAll';
+import Competition1vs1 from './Competition1vs1';
+import Competition2vs2 from './Competition2vs2';
+import CompetitionAllvsAll from './CompetitionAllvsAll';
 import CompetitionIndividual from './CompetitionIndividual';
 import { useEffect } from 'react';
-import Competition2Vs1 from './Competition2vs1';
+import Competition2vs1 from './Competition2vs1';
 
 export type CompetitionInputs = Omit<Competition, 'id'> & { id?: string };
 
@@ -203,10 +203,10 @@ const CompetitionForm = ({
                     />
                 </div>
                 <div>
-                    {type === '1 vs 1' && <Competition1Vs1 teams={teams} />}
-                    {type === '2 vs 1' && <Competition2Vs1 teams={teams} />}
-                    {type === '2 vs 2' && <Competition2Vs2 teams={teams} />}
-                    {type === 'Todos vs Todos' && <CompetitionAllVsAll />}
+                    {type === '1 vs 1' && <Competition1vs1 teams={teams} />}
+                    {type === '2 vs 1' && <Competition2vs1 teams={teams} />}
+                    {type === '2 vs 2' && <Competition2vs2 teams={teams} />}
+                    {type === 'Todos vs Todos' && <CompetitionAllvsAll />}
                     {type === 'Individual' && (
                         <CompetitionIndividual teams={teams} />
                     )}

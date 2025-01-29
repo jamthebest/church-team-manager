@@ -2,8 +2,9 @@ import React, { useMemo, useState } from 'react';
 import { Competition, Team } from '../types';
 import { Button, IconButton } from 'rsuite';
 import Dialog from './Dialog';
-import CompetitionsTab from './CompetitionsTab';
 import { Pencil } from 'lucide-react';
+import CompetitionForm from './Competition/CompetitionForm';
+import Loader from './Loader';
 
 interface ResultsTabProps {
     competitions: Competition[];
@@ -11,7 +12,7 @@ interface ResultsTabProps {
     loading: boolean;
     addResult: (competition: Competition) => Promise<void> | undefined;
     updateResult: (competition: Competition) => Promise<void> | undefined;
-    deleteResult: (id: string) => Promise<void> | undefined;
+    deleteResult: (id: string) => Promise<void>;
 }
 
 const ResultTab: React.FC<ResultsTabProps> = ({
@@ -63,11 +64,9 @@ const ResultTab: React.FC<ResultsTabProps> = ({
 
     const onDeleteCompetition = (id: string) => {
         const result = deleteResult(id);
-        if (result) {
-            result.then(() => {
-                setIsDialogOpen(false);
-            });
-        }
+        return result.then(() => {
+            setIsDialogOpen(false);
+        });
     };
 
     return (
@@ -215,13 +214,25 @@ const ResultTab: React.FC<ResultsTabProps> = ({
                     setEditingCompetition(null);
                 }}
             >
-                <CompetitionsTab
+                <Loader isOpen={loading} />
+                <CompetitionForm
                     teams={teams}
-                    loading={loading}
                     competition={editingCompetition}
-                    onAddCompetition={onAddCompetition}
-                    onUpdateCompetition={onUpdateCompetition}
-                    onDeleteCompetition={onDeleteCompetition}
+                    onDelete={onDeleteCompetition}
+                    onSubmit={(data) => {
+                        console.log(data);
+                        if (editingCompetition) {
+                            onUpdateCompetition({
+                                ...data,
+                                id: editingCompetition.id,
+                            });
+                        } else {
+                            onAddCompetition({
+                                ...data,
+                                id: '',
+                            });
+                        }
+                    }}
                 />
             </Dialog>
         </>

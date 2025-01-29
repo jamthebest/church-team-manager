@@ -3,13 +3,11 @@ import { Controller, useFormContext } from 'react-hook-form';
 import { Team } from '../../types';
 import { Form, InputGroup, InputNumber, InputPicker } from 'rsuite';
 
-export interface Competition2Vs2Props {
+export interface Competition2vs2Props {
     teams: Team[];
-    // selectedTeams?: Team[];
-    // scores?: number[];
 }
 
-const Competition2Vs2 = ({ teams }: Competition2Vs2Props) => {
+const Competition2vs2 = ({ teams }: Competition2vs2Props) => {
     const {
         control,
         getValues,
@@ -216,4 +214,4 @@ const Competition2Vs2 = ({ teams }: Competition2Vs2Props) => {
     );
 };
 
-export default Competition2Vs2;
+export default Competition2vs2;
