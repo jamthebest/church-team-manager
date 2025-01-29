@@ -14,6 +14,7 @@ import Competition2Vs2 from './Competition2vs2';
 import CompetitionAllVsAll from './CompetitionAllVsAll';
 import CompetitionIndividual from './CompetitionIndividual';
 import { useEffect } from 'react';
+import Competition2Vs1 from './Competition2vs1';
 
 export type CompetitionInputs = Omit<Competition, 'id'> & { id?: string };
 
@@ -82,6 +83,10 @@ const CompetitionForm = ({
                                                 value: '1 vs 1',
                                             },
                                             {
+                                                label: '2 vs 1',
+                                                value: '2 vs 1',
+                                            },
+                                            {
                                                 label: '2 vs 2',
                                                 value: '2 vs 2',
                                             },
@@ -101,6 +106,25 @@ const CompetitionForm = ({
                                             onChange(val);
                                             if (val === '1 vs 1') {
                                                 replace([
+                                                    {
+                                                        id: '',
+                                                        name: '',
+                                                        color: '#00BCD4',
+                                                    },
+                                                    {
+                                                        id: '',
+                                                        name: '',
+                                                        color: '#00BCD4',
+                                                    },
+                                                ]);
+                                                replaceScore([0, 0]);
+                                            } else if (val === '2 vs 1') {
+                                                replace([
+                                                    {
+                                                        id: '',
+                                                        name: '',
+                                                        color: '#00BCD4',
+                                                    },
                                                     {
                                                         id: '',
                                                         name: '',
@@ -177,6 +201,13 @@ const CompetitionForm = ({
                 <div>
                     {type === '1 vs 1' && (
                         <Competition1Vs1
+                            teams={teams}
+                            // selectedTeams={competition?.teams}
+                            // scores={competition?.scores}
+                        />
+                    )}
+                    {type === '2 vs 1' && (
+                        <Competition2Vs1
                             teams={teams}
                             // selectedTeams={competition?.teams}
                             // scores={competition?.scores}

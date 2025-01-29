@@ -5,7 +5,7 @@ import { AvailableColors } from '../constants';
 export const CompetitionSchema = yup.object().shape({
     type: yup
         .mixed<Competition['type']>()
-        .oneOf(['1 vs 1', '2 vs 2', 'Todos vs Todos', 'Individual'])
+        .oneOf(['1 vs 1', '2 vs 1', '2 vs 2', 'Todos vs Todos', 'Individual'])
         .required('El tipo de competencia es requerido'),
     teams: yup
         .array()

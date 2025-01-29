@@ -8,7 +8,7 @@ export interface Team {
 
 export interface Competition {
     id: string;
-    type: '1 vs 1' | '2 vs 2' | 'Todos vs Todos' | 'Individual';
+    type: '1 vs 1' | '2 vs 1' | '2 vs 2' | 'Todos vs Todos' | 'Individual';
     teams: Team[];
     scores: number[];
     description: string;
