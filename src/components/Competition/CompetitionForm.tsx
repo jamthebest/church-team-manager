@@ -128,7 +128,6 @@ const CompetitionForm = ({
                 type: 'Todos vs Todos',
             });
         }
-        console.log({ type, competition, teams });
         if (competition) {
             setValue('description', competition.description);
             reset({

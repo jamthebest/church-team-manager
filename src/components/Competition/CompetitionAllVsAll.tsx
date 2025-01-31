@@ -13,6 +13,10 @@ const CompetitionAllvsAll = () => {
     const usedTeams: Team[] = watch('teams');
     const scores: number[] = getValues('scores');
 
+    if (usedTeams.length !== scores.length) {
+        return null;
+    }
+
     return (
         <div className="space-y-4">
             <Form.Group>

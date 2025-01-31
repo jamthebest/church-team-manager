@@ -223,7 +223,6 @@ const ResultTab: React.FC<ResultsTabProps> = ({
                     competition={editingCompetition}
                     onDelete={onDeleteCompetition}
                     onSubmit={(data) => {
-                        console.log(data);
                         if (editingCompetition) {
                             onUpdateCompetition({
                                 ...data,
