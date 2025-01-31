@@ -49,6 +49,7 @@ const ResultTab: React.FC<ResultsTabProps> = ({
         if (result) {
             result.then(() => {
                 setIsDialogOpen(false);
+                setEditingCompetition(null);
             });
         }
     };
@@ -58,6 +59,7 @@ const ResultTab: React.FC<ResultsTabProps> = ({
         if (result) {
             result.then(() => {
                 setIsDialogOpen(false);
+                setEditingCompetition(null);
             });
         }
     };
@@ -66,6 +68,7 @@ const ResultTab: React.FC<ResultsTabProps> = ({
         const result = deleteResult(id);
         return result.then(() => {
             setIsDialogOpen(false);
+            setEditingCompetition(null);
         });
     };
 

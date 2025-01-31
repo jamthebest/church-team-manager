@@ -2,7 +2,6 @@ import {
     Controller,
     FormProvider,
     SubmitHandler,
-    useFieldArray,
     useForm,
 } from 'react-hook-form';
 import { yupResolver } from '@hookform/resolvers/yup';
@@ -34,109 +33,110 @@ const CompetitionForm = ({
     const methods = useForm<CompetitionInputs>({
         resolver: yupResolver(CompetitionSchema),
     });
-    const { control, register, handleSubmit, setValue, watch } = methods;
-    const { replace } = useFieldArray({ name: 'teams', control });
-    const { replace: replaceScore } = useFieldArray({
-        name: 'scores',
-        control,
-    } as never);
+    const { control, register, handleSubmit, reset, setValue, watch } = methods;
     const type = watch('type');
 
     useEffect(() => {
-        if (competition) return;
-        replace(
-            teams.map((team) => ({
-                id: team.id,
-                name: team.name,
-                color: team.color,
-            }))
-        );
-        replaceScore(teams.map(() => 0));
-    }, [competition, replace, replaceScore, teams]);
-
-    useEffect(() => {
         if (type === '1 vs 1') {
-            replace([
-                {
-                    id: competition?.teams[0]?.id ?? '',
-                    name: competition?.teams[0]?.name ?? '',
-                    color: competition?.teams[0]?.color ?? '#00BCD4',
-                },
-                {
-                    id: competition?.teams[1]?.id ?? '',
-                    name: competition?.teams[1]?.name ?? '',
-                    color: competition?.teams[1]?.color ?? '#00BCD4',
-                },
-            ]);
-            replaceScore(competition?.scores.slice(0, 2) ?? [0, 0]);
+            reset({
+                teams: [
+                    {
+                        id: competition?.teams[0]?.id ?? '',
+                        name: competition?.teams[0]?.name ?? '',
+                        color: competition?.teams[0]?.color ?? '#00BCD4',
+                    },
+                    {
+                        id: competition?.teams[1]?.id ?? '',
+                        name: competition?.teams[1]?.name ?? '',
+                        color: competition?.teams[1]?.color ?? '#00BCD4',
+                    },
+                ],
+                scores: competition?.scores.slice(0, 2) ?? [0, 0],
+                type: '1 vs 1',
+            });
         } else if (type === '2 vs 1') {
-            replace([
-                {
-                    id: competition?.teams[0]?.id ?? '',
-                    name: competition?.teams[0]?.name ?? '',
-                    color: competition?.teams[0]?.color ?? '#00BCD4',
-                },
-                {
-                    id: competition?.teams[1]?.id ?? '',
-                    name: competition?.teams[1]?.name ?? '',
-                    color: competition?.teams[1]?.color ?? '#00BCD4',
-                },
-                {
-                    id: competition?.teams[2]?.id ?? '',
-                    name: competition?.teams[2]?.name ?? '',
-                    color: competition?.teams[2]?.color ?? '#00BCD4',
-                },
-            ]);
-            replaceScore(competition?.scores.slice(0, 2) ?? [0, 0]);
+            reset({
+                teams: [
+                    {
+                        id: competition?.teams[0]?.id ?? '',
+                        name: competition?.teams[0]?.name ?? '',
+                        color: competition?.teams[0]?.color ?? '#00BCD4',
+                    },
+                    {
+                        id: competition?.teams[1]?.id ?? '',
+                        name: competition?.teams[1]?.name ?? '',
+                        color: competition?.teams[1]?.color ?? '#00BCD4',
+                    },
+                    {
+                        id: competition?.teams[2]?.id ?? '',
+                        name: competition?.teams[2]?.name ?? '',
+                        color: competition?.teams[2]?.color ?? '#00BCD4',
+                    },
+                ],
+                scores: competition?.scores.slice(0, 2) ?? [0, 0],
+                type: '2 vs 1',
+            });
         } else if (type === '2 vs 2') {
-            replace([
-                {
-                    id: competition?.teams[0]?.id ?? '',
-                    name: competition?.teams[0]?.name ?? '',
-                    color: competition?.teams[0]?.color ?? '#00BCD4',
-                },
-                {
-                    id: competition?.teams[1]?.id ?? '',
-                    name: competition?.teams[1]?.name ?? '',
-                    color: competition?.teams[1]?.color ?? '#00BCD4',
-                },
-                {
-                    id: competition?.teams[2]?.id ?? '',
-                    name: competition?.teams[2]?.name ?? '',
-                    color: competition?.teams[2]?.color ?? '#00BCD4',
-                },
-                {
-                    id: competition?.teams[3]?.id ?? '',
-                    name: competition?.teams[3]?.name ?? '',
-                    color: competition?.teams[3]?.color ?? '#00BCD4',
-                },
-            ]);
-            replaceScore(competition?.scores.slice(0, 2) ?? [0, 0]);
-        } else if (type === 'Todos vs Todos') {
-            replace(
-                teams.map((team) => ({
+            reset({
+                teams: [
+                    {
+                        id: competition?.teams[0]?.id ?? '',
+                        name: competition?.teams[0]?.name ?? '',
+                        color: competition?.teams[0]?.color ?? '#00BCD4',
+                    },
+                    {
+                        id: competition?.teams[1]?.id ?? '',
+                        name: competition?.teams[1]?.name ?? '',
+                        color: competition?.teams[1]?.color ?? '#00BCD4',
+                    },
+                    {
+                        id: competition?.teams[2]?.id ?? '',
+                        name: competition?.teams[2]?.name ?? '',
+                        color: competition?.teams[2]?.color ?? '#00BCD4',
+                    },
+                    {
+                        id: competition?.teams[3]?.id ?? '',
+                        name: competition?.teams[3]?.name ?? '',
+                        color: competition?.teams[3]?.color ?? '#00BCD4',
+                    },
+                ],
+                scores: competition?.scores.slice(0, 2) ?? [0, 0],
+                type: '2 vs 2',
+            });
+        } else if (type === 'Individual') {
+            reset({
+                teams: [
+                    {
+                        id: competition?.teams[0]?.id ?? '',
+                        name: competition?.teams[0]?.name ?? '',
+                        color: competition?.teams[0]?.color ?? '#00BCD4',
+                    },
+                ],
+                scores: competition?.scores.slice(0, 1) ?? [0],
+                type: 'Individual',
+            });
+        } else {
+            reset({
+                teams: teams.map((team) => ({
                     id: team.id,
                     name: team.name,
                     color: team.color,
-                }))
-            );
-            replaceScore(
-                competition?.scores.slice(0, teams.length) ?? teams.map(() => 0)
-            );
-        } else {
-            replace([
-                {
-                    id: competition?.teams[0]?.id ?? '',
-                    name: competition?.teams[0]?.name ?? '',
-                    color: competition?.teams[0]?.color ?? '#00BCD4',
-                },
-            ]);
-            replaceScore(competition?.scores.slice(0, 1) ?? [0]);
+                })),
+                scores:
+                    competition?.scores.slice(0, teams.length) ??
+                    teams.map(() => 0),
+                type: 'Todos vs Todos',
+            });
         }
+        console.log({ type, competition, teams });
         if (competition) {
             setValue('description', competition.description);
+            reset({
+                ...competition,
+                type: type ?? competition.type ?? 'Todos vs Todos',
+            });
         }
-    }, [competition, replace, replaceScore, setValue, teams, type]);
+    }, [competition, reset, setValue, teams, type]);
 
     return (
         <FormProvider {...methods}>
