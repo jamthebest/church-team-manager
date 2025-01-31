@@ -13,8 +13,6 @@ const CompetitionAllvsAll = () => {
     const usedTeams: Team[] = watch('teams');
     const scores: number[] = getValues('scores');
 
-    console.log({ usedTeams, scores });
-
     if (usedTeams.some((team) => !team.id)) {
         return null;
     }
