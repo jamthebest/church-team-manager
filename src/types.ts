@@ -1,4 +1,4 @@
-import { AvailableColors } from './constants';
+import { AvailableColors, AvailableCompetitionTypes } from './constants';
 
 export interface Team {
     id: string;
@@ -8,7 +8,7 @@ export interface Team {
 
 export interface Competition {
     id: string;
-    type: '1 vs 1' | '2 vs 1' | '2 vs 2' | 'Todos vs Todos' | 'Individual';
+    type: AvailableCompetitionTypes;
     teams: Team[];
     scores: number[];
     description: string;

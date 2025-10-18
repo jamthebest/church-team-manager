@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { Competition, Team } from '../types';
-import { AvailableColors } from '../constants';
+import { AvailableColors, AvailableCompetitionTypes } from '../constants';
 
 export const tabName = 'Equipos';
 
@@ -26,7 +26,7 @@ export interface ApiPointResponse {
 
 export interface ApiResultRequest {
     id?: string;
-    type: '1 vs 1' | '2 vs 2' | 'Todos vs Todos' | 'Individual';
+    type: AvailableCompetitionTypes;
     description: string;
     teams: string[];
     points: number[];
@@ -34,7 +34,7 @@ export interface ApiResultRequest {
 
 export interface ApiResultResponse {
     id: string;
-    type: '1 vs 1' | '2 vs 2' | 'Todos vs Todos' | 'Individual';
+    type: AvailableCompetitionTypes;
     description: string;
     date: Date;
     teams: ApiTeamResponse[];

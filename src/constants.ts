@@ -27,3 +27,13 @@ export const GetColor = (
 ): TypeAttributes.Color | undefined => {
     return DefaultColorsMap[color.toUpperCase() as AvailableColors];
 };
+
+export const AvailableCompetitionTypes = [
+    '1 vs 1',
+    '2 vs 1',
+    '2 vs 2',
+    'Todos vs Todos',
+    'Individual',
+] as const;
+
+export type AvailableCompetitionTypes = typeof AvailableCompetitionTypes[number];
