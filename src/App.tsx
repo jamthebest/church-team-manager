@@ -37,13 +37,20 @@ function App() {
     const [activeTab, setActiveTab] = useState<TabEnum>(TabEnum.POSITIONS);
     const toaster = useToaster();
     const title = useMemo<string>(() => {
-        return import.meta.env.VITE_APP_TITLE ?? ('Culto de Jóvenes SET ' + new Date().getFullYear());
+        return (
+            import.meta.env.VITE_APP_TITLE ??
+            'Culto de Jóvenes SET ' + new Date().getFullYear()
+        );
     }, []);
 
     useEffect(() => {
         loadData();
         // eslint-disable-next-line react-hooks/exhaustive-deps
     }, []);
+
+    useEffect(() => {
+        document.title = title;
+    }, [title]);
 
     useEffect(() => {
         if (error) {
