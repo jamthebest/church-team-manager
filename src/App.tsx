@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useState } from 'react';
+import { useCallback, useEffect, useMemo, useState } from 'react';
 import { Message, useToaster } from 'rsuite';
 import TableStandings from './components/TableStandings';
 import useData from './hooks/useData';
@@ -36,6 +36,9 @@ function App() {
     } = useData();
     const [activeTab, setActiveTab] = useState<TabEnum>(TabEnum.POSITIONS);
     const toaster = useToaster();
+    const title = useMemo<string>(() => {
+        return import.meta.env.VITE_APP_TITLE ?? ('Culto de Jóvenes SET ' + new Date().getFullYear());
+    }, []);
 
     useEffect(() => {
         loadData();
@@ -69,7 +72,7 @@ function App() {
     return (
         <div className="min-h-screen bg-gray-100 p-4 sm:p-6 md:p-8">
             <h1 className="text-2xl sm:text-3xl font-bold mb-6 sm:mb-8 text-center">
-                Culto de Jóvenes SET 2025
+                {title}
             </h1>
             <div className="mb-4">
                 <div className="border-b border-gray-200">
