@@ -77,7 +77,7 @@ function App() {
     );
 
     return (
-        <div className="min-h-screen bg-gray-100 p-4 sm:p-6 md:p-8">
+        <div className="app-background min-h-screen p-4 sm:p-6 md:p-8">
             <h1 className="text-2xl sm:text-3xl font-bold mb-6 sm:mb-8 text-center">
                 {title}
             </h1>

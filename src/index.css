@@ -9,3 +9,28 @@
 .custom-input-number .rs-input-number-btn-group-vertical {
     display: none;
 }
+
+.app-background {
+    position: relative;
+    min-height: 100vh;
+    z-index: 0;
+    color: #0f172a;
+}
+
+.app-background::before {
+    content: '';
+    position: fixed;
+    inset: 0;
+    background-image: linear-gradient(
+            rgba(255, 255, 255, 0.7),
+            rgba(255, 255, 255, 0.7)
+        ),
+        url('/background.jpeg');
+    background-size: cover;
+    background-position: center;
+    background-repeat: no-repeat;
+    background-attachment: fixed;
+    opacity: 0.65;
+    filter: saturate(0.95);
+    z-index: -1;
+}

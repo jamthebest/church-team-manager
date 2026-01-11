@@ -74,7 +74,7 @@ const ResultTab: React.FC<ResultsTabProps> = ({
 
     return (
         <>
-            <div className="bg-white rounded-lg shadow p-4 sm:p-6">
+            <div className="bg-white/70 border border-white/60 rounded-lg shadow-lg p-4 sm:p-6">
                 <div className="flex justify-between items-baseline">
                     <h2 className="text-xl font-semibold mb-4">
                         Resultados de Competencias
@@ -129,7 +129,7 @@ const ResultTab: React.FC<ResultsTabProps> = ({
                 <div className="overflow-x-auto">
                     <table className="w-full min-w-full table-auto">
                         <thead>
-                            <tr className="bg-gray-100">
+                            <tr className="bg-gray-100/60">
                                 <th className="text-left p-2">Tipo</th>
                                 <th className="text-left p-2">Descripción</th>
                                 <th className="text-left p-2">

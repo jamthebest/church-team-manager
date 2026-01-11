@@ -77,7 +77,7 @@ const TableStandings: React.FC<TableStandingsProps> = ({
 
     return (
         <>
-            <div className="bg-white rounded-lg shadow p-4 sm:p-6 mb-4">
+            <div className="bg-white/70 border border-white/60 rounded-lg shadow-lg p-4 sm:p-6 mb-4">
                 <Loader isOpen={loading} />
                 <div className="flex justify-between items-baseline">
                     <h2 className="text-xl font-semibold mb-4">
@@ -94,7 +94,7 @@ const TableStandings: React.FC<TableStandingsProps> = ({
                 <div className="overflow-x-auto">
                     <table className="w-full min-w-full">
                         <thead>
-                            <tr className="bg-gray-100">
+                            <tr className="bg-gray-100/60">
                                 <th className="text-left p-2">Posición</th>
                                 <th className="text-left p-2">Equipo</th>
                                 <th className="text-left p-2">Puntos</th>
